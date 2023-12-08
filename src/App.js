@@ -15,7 +15,7 @@ function App() {
        <Navbar/>
       <Routes>
         <Route path="/" element={<HomePage/>} />
-        <Route path="/presentation/:UserId" element={<Slides/>} />
+        <Route path="/presentation/:UserId/create" element={<Slides/>} />
       </Routes>
     </Router>
   </ChakraProvider>

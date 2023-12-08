@@ -4,10 +4,21 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../../Firebase/firebaseConfig";
 import { useSetRecoilState } from "recoil";
 import { authModalState } from "../../../components/AuthAtom/SignInAtom";
+import { useNavigate } from "react-router-dom";
 
 const SlidesOverView = () => {
   const [user] = useAuthState(auth);
   const setAuthModalState = useSetRecoilState(authModalState);
+    const navigate = useNavigate();
+
+  const handleCreateUser = () =>{
+    if(user){
+      navigate(`/presentation/${user?.uid}/create`)
+    }
+    else{
+      setAuthModalState({open: true, view: 'login'})
+    }
+  }
 
   return (
     <Flex
@@ -46,6 +57,7 @@ const SlidesOverView = () => {
             width={{base: "250px", md:"150px"}}
             mb={{base: "20px", md:"0px"}}
             height="50px"
+            onClick={handleCreateUser}
           >
             Create Slides
           </Button>
