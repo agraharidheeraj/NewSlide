@@ -5,7 +5,7 @@ import HomePage from './pages/HomeSection/HomePage';
 import { ChakraProvider } from "@chakra-ui/react";
 import Navbar from './pages/HeaderSection/Navbar';
 import { RecoilRoot } from 'recoil';
-import CreateSlides from './pages/SlidesSection/Slides';
+import Slides from './pages/SlidesSection/Slides';
 
 function App() {
   return (
@@ -15,7 +15,7 @@ function App() {
        <Navbar/>
       <Routes>
         <Route path="/" element={<HomePage/>} />
-        <Route path="/presentation/:UserId" element={<CreateSlides/>} />
+        <Route path="/presentation/:UserId" element={<Slides/>} />
       </Routes>
     </Router>
   </ChakraProvider>
