@@ -1,24 +1,25 @@
-import logo from './logo.svg';
 import './App.css';
+import { theme } from "./components/chakraUi/theme";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import HomePage from './pages/HomeSection/HomePage';
+import { ChakraProvider } from "@chakra-ui/react";
+import Navbar from './pages/HeaderSection/Navbar';
+import { RecoilRoot } from 'recoil';
+import CreateSlides from './pages/SlidesSection/Slides';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <RecoilRoot>
+    <ChakraProvider theme={theme}>
+    <Router>
+       <Navbar/>
+      <Routes>
+        <Route path="/" element={<HomePage/>} />
+        <Route path="/presentation/:UserId" element={<CreateSlides/>} />
+      </Routes>
+    </Router>
+  </ChakraProvider>
+  </RecoilRoot>
   );
 }
 
