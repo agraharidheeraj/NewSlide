@@ -115,7 +115,7 @@ const RightSideView = () => {
         <Box>
           <Text fontSize="lg">Font Size:</Text>
           <Input
-            type="text"
+            type="number"
             value={editedTextArea.fontSize}
             onChange={(e) => handleInputChange("fontSize", e.target.value)}
           />
@@ -133,13 +133,13 @@ const RightSideView = () => {
           />
           <Text fontSize="lg">Opacity:</Text>
           <Input
-            type="text"
+            type="number"
             value={editedTextArea.opacity}
             onChange={(e) => handleInputChange("opacity", e.target.value)}
           />
           <Text fontSize="lg">Position X:</Text>
           <Input
-            type="text"
+            type="number"
             value={formatPosition(editedTextArea.position).x}
             onChange={(e) =>
               handleInputChange("position", {
@@ -150,7 +150,7 @@ const RightSideView = () => {
           />
           <Text fontSize="lg">Position Y:</Text>
           <Input
-            type="text"
+            type="number"
             value={formatPosition(editedTextArea.position).y}
             onChange={(e) =>
               handleInputChange("position", {
@@ -161,7 +161,7 @@ const RightSideView = () => {
           />
           <Text fontSize="lg">Z-Index:</Text>
           <Input
-            type="text"
+            type="number"
             value={editedTextArea.zIndex}
             onChange={(e) => handleInputChange("zIndex", e.target.value)}
           />
@@ -172,28 +172,28 @@ const RightSideView = () => {
         <Box>
           <Text fontSize="lg">Width:</Text>
           <Input
-            type="text"
+            type="number"
             value={editedTextArea.width}
             onChange={(e) => handleInputChange("width", e.target.value)}
           />
 
           <Text fontSize="lg">Height:</Text>
           <Input
-            type="text"
+            type="number"
             value={editedTextArea.height}
             onChange={(e) => handleInputChange("height", e.target.value)}
           />
 
           <Text fontSize="lg">Border Radius:</Text>
           <Input
-            type="text"
+            type="number"
             value={editedTextArea.borderRadius}
             onChange={(e) => handleInputChange("borderRadius", e.target.value)}
           />
 
           <Text fontSize="lg">Position X:</Text>
           <Input
-            type="text"
+            type="number"
             value={formatPosition(editedTextArea.imagePosition).x}
             onChange={(e) =>
               handleInputChange("imagePosition", {
@@ -205,7 +205,7 @@ const RightSideView = () => {
 
           <Text fontSize="lg">Position Y:</Text>
           <Input
-            type="text"
+            type="number"
             value={formatPosition(editedTextArea.imagePosition).y}
             onChange={(e) =>
               handleInputChange("imagePosition", {
@@ -217,7 +217,7 @@ const RightSideView = () => {
 
           <Text fontSize="lg">Z-Index:</Text>
           <Input
-            type="text"
+            type="number"
             value={editedTextArea.zIndex}
             onChange={(e) => handleInputChange("zIndex", e.target.value)}
           />

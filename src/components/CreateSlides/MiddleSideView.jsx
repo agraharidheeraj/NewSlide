@@ -2,15 +2,23 @@
 import React, { useRef, useState } from "react";
 import { Box, Button, Flex } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
-import { addTextArea, selectTextArea, updateTextArea } from "../ReduxStore/textAreasSlice";
+import {
+  addTextArea,
+  selectTextArea,
+  updateTextArea,
+} from "../ReduxStore/textAreasSlice";
 import { addImage, selectImage, updateImage } from "../ReduxStore/imageSlice";
 import DraggableTextarea from "./ResizableTextarea";
+import { addElementToPage } from "../ReduxStore/pageSlice";
 
 const MiddleSideView = () => {
   const dispatch = useDispatch();
   const textAreas = useSelector((state) => state.textAreas.textAreas);
   const images = useSelector((state) => state.images.images);
   const selectedPage = useSelector((state) => state.pages.selectedPage);
+  const selectedTextArea = useSelector(
+    (state) => state.textAreas.selectedTextArea
+  );
   const [draggedItem, setDraggedItem] = useState(null);
   const dragRef = useRef(null);
 
@@ -24,7 +32,6 @@ const MiddleSideView = () => {
 
   const handleAddText = () => {
     dispatch(addTextArea());
-    
   };
 
   const handleAddImage = () => {
@@ -69,11 +76,31 @@ const MiddleSideView = () => {
       };
 
       if (draggedItem.type === "text") {
-        dispatch(updateTextArea({ id: draggedItem.id, updatedProperties: { position: newPosition } }));
+        dispatch(
+          updateTextArea({
+            id: draggedItem.id,
+            updatedProperties: { position: newPosition },
+          })
+        );
       } else if (draggedItem.type === "image") {
-        dispatch(updateImage({ id: draggedItem.id, updatedProperties: { position: newPosition } }));
+        dispatch(
+          updateImage({
+            id: draggedItem.id,
+            updatedProperties: { position: newPosition },
+          })
+        );
       }
     }
+  };
+
+  const handleTextChange = (e) => {
+    const value = e.target.value;
+    dispatch(
+      updateTextArea({
+        id: selectedTextArea,
+        updatedProperties: { content: value },
+      })
+    );
   };
 
   return (
@@ -85,7 +112,13 @@ const MiddleSideView = () => {
         <Button borderRadius={8} onClick={handleAddImage}>
           Upload Image
         </Button>
-        <input id="imageInput" type="file" hidden onChange={handleImageUpload} accept="image/*" />
+        <input
+          id="imageInput"
+          type="file"
+          hidden
+          onChange={handleImageUpload}
+          accept="image/*"
+        />
       </Box>
 
       <Box
@@ -107,7 +140,7 @@ const MiddleSideView = () => {
           boxShadow="outline"
           height="100%"
         >
-          <Box position="relative" ref={dragRef}>
+          <Box id={selectedPage} position="relative" ref={dragRef}>
             {textAreas.map((textArea) => (
               <Box
                 key={textArea.id}
@@ -116,7 +149,9 @@ const MiddleSideView = () => {
                 left={`${textArea.position.x}px`}
                 zIndex={textArea.zIndex}
                 draggable
-                onDragStart={() => handleDragStart({ id: textArea.id, type: "text" })}
+                onDragStart={() =>
+                  handleDragStart({ id: textArea.id, type: "text" })
+                }
                 onDragEnd={handleDragEnd}
               >
                 <DraggableTextarea
@@ -127,6 +162,7 @@ const MiddleSideView = () => {
                   opacity={textArea.opacity}
                   zIndex={textArea.zIndex}
                   width="auto"
+                  onChange={handleTextChange}
                 />
               </Box>
             ))}
@@ -138,7 +174,9 @@ const MiddleSideView = () => {
                 left={`${image.position.x}px`}
                 zIndex={image.zIndex}
                 draggable
-                onDragStart={() => handleDragStart({ id: image.id, type: "image" })}
+                onDragStart={() =>
+                  handleDragStart({ id: image.id, type: "image" })
+                }
                 onDragEnd={handleDragEnd}
               >
                 <div

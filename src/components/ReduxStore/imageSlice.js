@@ -27,6 +27,7 @@ const imageSlice = createSlice({
         borderRadius: 0,
         zIndex: 1,
         imageUrl: action.payload?.imageUrl || "",
+        type: "image",
       };
       state.images.push(newImage);
       state.selectedImage = newImage;
@@ -37,9 +38,25 @@ const imageSlice = createSlice({
         image.id === id ? { ...image, ...updatedProperties } : image
       );
     },
+
+    addNewImage: (state, action) => {
+      const currentImage = action.payload;
+
+      state.images = currentImage;
+    },
+    clearImage: (state, action) => {
+      state.images = [];
+      state.selectedImage = null;
+    },
   },
 });
 
-export const { selectImage, deleteImage, addImage, updateImage } =
-  imageSlice.actions;
+export const {
+  selectImage,
+  deleteImage,
+  addImage,
+  updateImage,
+  clearImage,
+  addNewImage,
+} = imageSlice.actions;
 export default imageSlice.reducer;

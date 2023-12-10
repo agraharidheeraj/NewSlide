@@ -13,16 +13,16 @@ import {
   ModalFooter,
   useDisclosure,
 } from "@chakra-ui/react";
-import {
-  useDispatch,
-  useSelector,
-} from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   addPage,
   selectPage,
   deletePage,
+  addElementToPage,
 } from "../ReduxStore/pageSlice";
-
+import { clearTextArea, addNewTextArea } from "../ReduxStore/textAreasSlice";
+import { clearImage, addNewImage } from "../ReduxStore/imageSlice";
+import html2canvas from "html2canvas";
 
 const LeftSideView = () => {
   const dispatch = useDispatch();
@@ -30,14 +30,40 @@ const LeftSideView = () => {
   const selectedPage = useSelector((state) => state.pages.selectedPage);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedPageId, setSelectedPageId] = useState("");
-
+  const textAreas = useSelector((state) => state.textAreas.textAreas);
+  const images = useSelector((state) => state.images.images);
+  const [canvasElement, setCanvasElement] = useState(null);
   const handleAddPage = () => {
-    dispatch(addPage({ elements: [] }));
+    dispatch(addPage());
+    dispatch(
+      addElementToPage({
+        pageId: selectedPage,
+        elements: [...textAreas, ...images],
+      })
+    );
+    dispatch(clearTextArea());
+    dispatch(clearImage());
   };
 
   const handleSelectPage = (pageId) => {
+    let currentText = [];
+    let currentImage = [];
     dispatch(selectPage(pageId));
     setSelectedPageId(pageId);
+
+    const currentPage = pages.filter((item) => item.id === pageId);
+
+    currentPage[0].elements.forEach((item) => {
+      if (item.type === "image") {
+        currentImage.push(item);
+      } else {
+        currentText.push(item);
+      }
+    });
+
+    dispatch(addNewTextArea(currentText));
+    dispatch(addNewImage(currentImage));
+    console.log(currentPage);
   };
 
   const handleDeletePage = () => {
@@ -46,7 +72,13 @@ const LeftSideView = () => {
       onClose();
     }
   };
-  
+
+  React.useEffect(() => {
+    // Trigger the capture when the component mounts or when the selected page changes
+    html2canvas(document.getElementById(`${selectedPage}`)).then((canvas) => {
+      setCanvasElement(canvas);
+    });
+  }, [selectedPage]);
 
   return (
     <Box
@@ -58,11 +90,16 @@ const LeftSideView = () => {
       maxHeight="calc(100vh - 20px)"
     >
       <Box mb={4}>
-        <Button borderRadius={8} colorScheme="red" onClick={handleAddPage} mr={2}>
+        <Button
+          borderRadius={8}
+          colorScheme="red"
+          onClick={handleAddPage}
+          mr={2}
+        >
           Add Page
         </Button>
         {selectedPage && (
-          <Button borderRadius={8} bg='orange.500'  onClick={() => onOpen()}>
+          <Button borderRadius={8} bg="orange.500" onClick={() => onOpen()}>
             Delete Page
           </Button>
         )}
@@ -78,9 +115,7 @@ const LeftSideView = () => {
           onClick={() => handleSelectPage(page.id)}
           key={page.id}
         >
-          <CardBody>
-           
-          </CardBody>
+          <CardBody id="abcd"></CardBody>
         </Card>
       ))}
       <Modal isOpen={isOpen} onClose={onClose}>

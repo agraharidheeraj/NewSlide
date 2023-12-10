@@ -24,7 +24,7 @@ const DraggableTextarea = ({ id, ...props }) => {
           position: "relative",
           width: "fit-content",
           height: "fit-content",
-         outline: "none",
+          outline: "none",
         }}
       >
         <Textarea

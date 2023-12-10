@@ -27,6 +27,8 @@ const textAreasSlice = createSlice({
         bgColor: "",
         opacity: "",
         zIndex: 1,
+        content: "",
+        type: "text",
       };
       state.textAreas.push(newTextArea);
       state.selectedTextArea = newTextArea;
@@ -37,9 +39,26 @@ const textAreasSlice = createSlice({
         textArea.id === id ? { ...textArea, ...updatedProperties } : textArea
       );
     },
+
+    addNewTextArea: (state, action) => {
+      const currentText = action.payload;
+      console.log(currentText);
+      state.textAreas = currentText;
+    },
+
+    clearTextArea: (state) => {
+      state.textAreas = [];
+      state.selectedTextArea = null;
+    },
   },
 });
 
-export const { selectTextArea, deleteTextArea, addTextArea, updateTextArea } =
-  textAreasSlice.actions;
+export const {
+  selectTextArea,
+  deleteTextArea,
+  addTextArea,
+  updateTextArea,
+  clearTextArea,
+  addNewTextArea,
+} = textAreasSlice.actions;
 export default textAreasSlice.reducer;

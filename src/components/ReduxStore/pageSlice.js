@@ -1,8 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  pages: [],
-  selectedPage: null,
+  pages: [
+    {
+      id: Date.now(),
+      elements: [],
+    },
+  ],
+  selectedPage: Date.now(),
 };
 
 const pageSlice = createSlice({
@@ -15,36 +20,40 @@ const pageSlice = createSlice({
         elements: [],
       };
       state.pages.push(newPage);
+      state.selectedPage = newPage.id;
     },
     selectPage: (state, action) => {
       state.selectedPage = action.payload;
+      
     },
     addElementToPage: (state, action) => {
-      const { pageId, element } = action.payload;
+      const { pageId, elements } = action.payload;
+
       const page = state.pages.find((p) => p.id === pageId);
       if (page) {
-        page.elements.push(element);
+        page.elements.push(...elements);
       }
     },
     deletePage: (state) => {
-        const selectedPageIndex = state.pages.findIndex(
-          (page) => page.id === state.selectedPage
-        );
-  
-        if (selectedPageIndex !== -1) {
-          state.pages.splice(selectedPageIndex, 1);
-  
-          if (state.pages.length > 0) {
-            // If there are remaining pages, select the first one
-            state.selectedPage = state.pages[0].id;
-          } else {
-            // If no pages are left, clear the selectedPage
-            state.selectedPage = null;
-          }
+      const selectedPageIndex = state.pages.findIndex(
+        (page) => page.id === state.selectedPage
+      );
+
+      if (selectedPageIndex !== -1) {
+        state.pages.splice(selectedPageIndex, 1);
+
+        if (state.pages.length > 0) {
+          // If there are remaining pages, select the first one
+          state.selectedPage = state.pages[0].id;
+        } else {
+          // If no pages are left, clear the selectedPage
+          state.selectedPage = null;
         }
-      },
+      }
+    },
   },
 });
 
-export const { addPage, selectPage, addElementToPage,deletePage } = pageSlice.actions;
+export const { addPage, selectPage, addElementToPage, deletePage } =
+  pageSlice.actions;
 export default pageSlice.reducer;
