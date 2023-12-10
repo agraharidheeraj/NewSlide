@@ -6,11 +6,14 @@ import { ChakraProvider } from "@chakra-ui/react";
 import Navbar from './pages/HeaderSection/Navbar';
 import { RecoilRoot } from 'recoil';
 import Slides from './pages/SlidesSection/Slides';
+import { Provider } from 'react-redux';
+import store from './components/ReduxStore/Store'
 
 function App() {
   return (
     <RecoilRoot>
     <ChakraProvider theme={theme}>
+    <Provider store={store}>
     <Router>
        <Navbar/>
       <Routes>
@@ -18,6 +21,7 @@ function App() {
         <Route path="/presentation/:UserId/create" element={<Slides/>} />
       </Routes>
     </Router>
+    </Provider>
   </ChakraProvider>
   </RecoilRoot>
   );
