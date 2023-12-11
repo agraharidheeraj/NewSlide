@@ -29,9 +29,9 @@ const pageSlice = createSlice({
       state.selectedPage = action.payload;
     },
     addElementToPage: (state, action) => {
-      const { pageId, elements } = action.payload;
+      const { id, elements } = action.payload;
 
-      const page = state.presentation.slides.find((p) => p.id === pageId);
+      const page = state.presentation.slides.find((p) => p.id === id);
       if (page) {
         page.elements.push(...elements);
       }
@@ -46,7 +46,7 @@ const pageSlice = createSlice({
 
         if (state.presentation.slides.length > 0) {
           // If there are remaining pages, select the first one
-          state.selectedPage = state.pages[0].id;
+          state.selectedPage = state.presentation.slides[0].id;
         } else {
           // If no pages are left, clear the selectedPage
           state.selectedPage = null;

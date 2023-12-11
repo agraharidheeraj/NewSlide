@@ -63,7 +63,7 @@ export const createPostApi = createApi({
             // If the document already exists, update the slides array
             const existingSlides = postSnapshot.data()?.slides || [];
             const updatedSlides = [...existingSlides, slide];
-            await setDoc(postRef, { slides: updatedSlides });
+            await setDoc(postRef, { slides: updatedSlides, userID: userID });
           }
 
           console.log("ok");

@@ -62,16 +62,16 @@ const LeftSideView = () => {
     dispatch(selectPage(pageId));
     setSelectedPageId(pageId);
 
-    const currentPage = pages.filter((item) => item.id === pageId);
+    const currentPage = pages.find((item) => item.id === pageId);
 
-    currentPage[0].elements.forEach((item) => {
+    currentPage.elements.forEach((item) => {
       if (item.type === "image") {
         currentImage.push(item);
       } else {
         currentText.push(item);
       }
     });
-    console.log(selectedPage);
+    console.log(selectedPageId);
 
     dispatch(addNewTextArea(currentText));
     dispatch(addNewImage(currentImage));
@@ -84,7 +84,28 @@ const LeftSideView = () => {
     }
   };
 
-  const { data, error, isLoading } = useFetchPostQuery("1702271034661");
+  let id;
+
+  if (localStorage.getItem("currentPresentation")) {
+    id = localStorage.getItem("currentPresentation");
+  } else {
+    localStorage.setItem("currentPresentation", Date.now());
+    dispatch(
+      currentPresentation({
+        id: Date.now(0),
+        slides: [
+          {
+            id: Date.now(),
+            elements: [],
+          },
+        ],
+
+        selectedPage: Date.now(),
+      })
+    );
+  }
+
+  const { data, error, isLoading } = useFetchPostQuery(`${id}`);
 
   React.useEffect(() => {
     if (!isLoading) {
@@ -95,16 +116,16 @@ const LeftSideView = () => {
 
         dispatch(
           currentPresentation({
-            id: "1702271034661",
+            id: `${id}`,
             slides: data.slides,
-            selectedPage: data.slides[0].pageId,
+            selectedPage: data.slides[0].id,
           })
         );
       } else {
         console.warn("Invalid or empty data received:", data);
       }
     }
-  }, [data, error, isLoading]);
+  }, [isLoading]);
 
   return (
     <Box
@@ -132,6 +153,7 @@ const LeftSideView = () => {
       </Box>
       {pages.map((page) => (
         <Card
+          id={page.id}
           maxW="md"
           mb={3}
           height="120px"
@@ -141,8 +163,7 @@ const LeftSideView = () => {
           onClick={() => handleSelectPage(page.id)}
           key={page.id}
         >
-          {console.log(pages)}
-          <CardBody id="abcd"></CardBody>
+          <CardBody></CardBody>
         </Card>
       ))}
       <Modal isOpen={isOpen} onClose={onClose}>

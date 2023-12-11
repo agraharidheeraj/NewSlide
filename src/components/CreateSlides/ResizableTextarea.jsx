@@ -35,9 +35,10 @@ const DraggableTextarea = ({ id, ...props }) => {
             overflow: "auto",
             cursor: isSelected ? "grab" : "default",
             position: "absolute",
-            width: "100%",
-            height: "100%",
+            width: "300px",
+            height: "100px",
             outline: "none",
+            border: "none",
           }}
         />
       </div>
