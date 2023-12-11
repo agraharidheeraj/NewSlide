@@ -44,12 +44,7 @@ const Navbar = () => {
       <Flex align="center">
         <Link to="/">
           <Flex align="center" width={{ base: "50px", md: "auto" }} mr="3rem">
-            <Image
-              src={slideslogo}
-              height="40px"
-              margin="12px"
-              marginMd="25px"
-            />
+            <Image src={slideslogo} height="40px" margin="12px" />
             <Text fontSize="18pt" fontWeight={600} mr={2} color="gray.600">
               New
             </Text>
@@ -102,12 +97,7 @@ const Navbar = () => {
                 width={{ base: "50px", md: "auto" }}
                 mr="3rem"
               >
-                <Image
-                  src={slideslogo}
-                  height="40px"
-                  margin="12px"
-                  marginMd="25px"
-                />
+                <Image src={slideslogo} height="40px" margin="12px" />
                 <Text fontSize="18pt" fontWeight={600} mr={2} color="gray.600">
                   New
                 </Text>
@@ -119,19 +109,19 @@ const Navbar = () => {
           </DrawerHeader>
           <DrawerBody>
             {/*  Overview and Features for mobile view */}
-         
-              {isMobile && (
-                <>
-                  <Text fontWeight={500} mb={2}>
-                    Overview
-                  </Text>
-                  <Text fontWeight={500} mb={2}>
-                    Features
-                  </Text>
-                </>
-              )}
-              {/*  right side components here */}
-              <RightSide />
+
+            {isMobile && (
+              <>
+                <Text fontWeight={500} mb={2}>
+                  Overview
+                </Text>
+                <Text fontWeight={500} mb={2}>
+                  Features
+                </Text>
+              </>
+            )}
+            {/*  right side components here */}
+            <RightSide />
           </DrawerBody>
         </DrawerContent>
       </Drawer>

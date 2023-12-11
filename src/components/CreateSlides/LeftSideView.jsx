@@ -23,7 +23,7 @@ import {
 } from "../ReduxStore/pageSlice";
 import { clearTextArea, addNewTextArea } from "../ReduxStore/textAreasSlice";
 import { clearImage, addNewImage } from "../ReduxStore/imageSlice";
-import { useAddPostMutation } from "../ReduxStore/APISlice";
+import { useUpdateElementsMutation } from "../ReduxStore/APISlice";
 import { useFetchPostQuery } from "../ReduxStore/APISlice";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../Firebase/firebaseConfig";
@@ -32,12 +32,14 @@ const LeftSideView = () => {
   const dispatch = useDispatch();
   const presentation = useSelector((state) => state.presentation.presentation);
   const pages = useSelector((state) => state.presentation.presentation.slides);
-  const selectedPage = useSelector((state) => state.presentation.selectedPage);
+  const selectedPage = useSelector(
+    (state) => state.presentation.presentation.selectedPage
+  );
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [selectedPageId, setSelectedPageId] = useState("");
+  const [selectedPageId, setSelectedPageId] = useState(selectedPage);
   const textAreas = useSelector((state) => state.textAreas.textAreas);
   const images = useSelector((state) => state.images.images);
-  const [addPost] = useAddPostMutation();
+  const [updateElements] = useUpdateElementsMutation();
 
   const [user] = useAuthState(auth);
   const uuid = user?.uid;
@@ -45,12 +47,17 @@ const LeftSideView = () => {
   const handleAddPage = () => {
     dispatch(addPage());
     let obj = {
-      id: selectedPage,
+      id: selectedPageId,
       elements: [...textAreas, ...images],
     };
-    dispatch(addElementToPage(obj));
-    console.log(presentation.id);
-    addPost({ id: presentation.id, slide: obj, userID: uuid });
+
+    updateElements({
+      id: presentation.id,
+      slideId: obj.id,
+      updatedElements: obj.elements,
+      userID: uuid,
+    });
+    setSelectedPageId(presentation.selectedPage);
 
     dispatch(clearTextArea());
     dispatch(clearImage());
@@ -60,6 +67,7 @@ const LeftSideView = () => {
     let currentText = [];
     let currentImage = [];
     dispatch(selectPage(pageId));
+    console.log(pageId);
     setSelectedPageId(pageId);
 
     const currentPage = pages.find((item) => item.id === pageId);
@@ -71,7 +79,6 @@ const LeftSideView = () => {
         currentText.push(item);
       }
     });
-    console.log(selectedPageId);
 
     dispatch(addNewTextArea(currentText));
     dispatch(addNewImage(currentImage));
@@ -92,14 +99,15 @@ const LeftSideView = () => {
     localStorage.setItem("currentPresentation", Date.now());
     dispatch(
       currentPresentation({
-        id: Date.now(0),
-        slides: [
-          {
-            id: Date.now(),
-            elements: [],
-          },
-        ],
-
+        presentation: {
+          id: Date.now(),
+          slides: [
+            {
+              id: Date.now(),
+              elements: [],
+            },
+          ],
+        },
         selectedPage: Date.now(),
       })
     );

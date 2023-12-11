@@ -9,8 +9,8 @@ const initialState = {
         elements: [],
       },
     ],
+    selectedPage: Date.now(),
   },
-  selectedPage: Date.now(),
 };
 
 const pageSlice = createSlice({
@@ -23,22 +23,22 @@ const pageSlice = createSlice({
         elements: [],
       };
       state.presentation.slides.push(newPage);
-      state.selectedPage = newPage.id;
+      state.presentation.selectedPage = newPage.id;
     },
     selectPage: (state, action) => {
-      state.selectedPage = action.payload;
+      state.presentation.selectedPage = action.payload;
     },
     addElementToPage: (state, action) => {
       const { id, elements } = action.payload;
 
       const page = state.presentation.slides.find((p) => p.id === id);
       if (page) {
-        page.elements.push(...elements);
+        page.elements = elements;
       }
     },
     deletePage: (state) => {
       const selectedPageIndex = state.presentation.slides.findIndex(
-        (page) => page.id === state.selectedPage
+        (page) => page.id === state.presentation.selectedPage
       );
 
       if (selectedPageIndex !== -1) {
@@ -46,10 +46,10 @@ const pageSlice = createSlice({
 
         if (state.presentation.slides.length > 0) {
           // If there are remaining pages, select the first one
-          state.selectedPage = state.presentation.slides[0].id;
+          state.presentation.selectedPage = state.presentation.slides[0].id;
         } else {
           // If no pages are left, clear the selectedPage
-          state.selectedPage = null;
+          state.presentation.selectedPage = null;
         }
       }
     },

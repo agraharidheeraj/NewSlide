@@ -10,17 +10,25 @@ import {
 import { addImage, selectImage, updateImage } from "../ReduxStore/imageSlice";
 import DraggableTextarea from "./ResizableTextarea";
 import { addElementToPage } from "../ReduxStore/pageSlice";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "../../Firebase/firebaseConfig";
+import { useUpdateElementsMutation } from "../ReduxStore/APISlice";
 
 const MiddleSideView = () => {
   const dispatch = useDispatch();
   const textAreas = useSelector((state) => state.textAreas.textAreas);
   const images = useSelector((state) => state.images.images);
-  const selectedPage = useSelector((state) => state.presentation.selectedPage);
+  const selectedPage = useSelector((state) => state.presentation.presentation.selectedPage);
   const selectedTextArea = useSelector(
     (state) => state.textAreas.selectedTextArea
   );
   const [draggedItem, setDraggedItem] = useState(null);
   const dragRef = useRef(null);
+  const presentation = useSelector((state) => state.presentation.presentation);
+
+  const [updateElements] = useUpdateElementsMutation();
+  const [user] = useAuthState(auth);
+  const uuid = user?.uid;
 
   const handleTextClick = (id) => {
     dispatch(selectTextArea(id));
@@ -103,23 +111,49 @@ const MiddleSideView = () => {
     );
   };
 
+  const handleSave = () => {
+    let obj = {
+      id: selectedPage,
+      elements: [...textAreas, ...images],
+    };
+    dispatch(addElementToPage(obj));
+    updateElements({
+      id: presentation.id,
+      slideId: obj.id,
+      updatedElements: obj.elements,
+      userID: uuid,
+    });
+    console.log("saved");
+  };
+
   return (
     <Flex width="100%" direction="column">
-      <Box ml={10} mt={2}>
-        <Button borderRadius={8} onClick={handleAddText} marginRight="20px">
-          Add Text
+      <Flex justifyContent="space-between">
+        <Box ml={10} mt={2}>
+          <Button borderRadius={8} onClick={handleAddText} marginRight="20px">
+            Add Text
+          </Button>
+          <Button borderRadius={8} onClick={handleAddImage}>
+            Upload Image
+          </Button>
+          <input
+            id="imageInput"
+            type="file"
+            hidden
+            onChange={handleImageUpload}
+            accept="image/*"
+          />
+        </Box>
+        <Button
+          ml={10}
+          mt={2}
+          borderRadius={8}
+          onClick={handleSave}
+          marginRight="25px"
+        >
+          Save Changes
         </Button>
-        <Button borderRadius={8} onClick={handleAddImage}>
-          Upload Image
-        </Button>
-        <input
-          id="imageInput"
-          type="file"
-          hidden
-          onChange={handleImageUpload}
-          accept="image/*"
-        />
-      </Box>
+      </Flex>
 
       <Box
         height="100%"

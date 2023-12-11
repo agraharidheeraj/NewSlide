@@ -42,7 +42,7 @@ const textAreasSlice = createSlice({
 
     addNewTextArea: (state, action) => {
       const currentText = action.payload;
-      console.log(currentText);
+
       state.textAreas = currentText;
     },
 
