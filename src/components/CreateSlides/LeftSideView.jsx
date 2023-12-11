@@ -19,28 +19,39 @@ import {
   selectPage,
   deletePage,
   addElementToPage,
+  currentPresentation,
 } from "../ReduxStore/pageSlice";
 import { clearTextArea, addNewTextArea } from "../ReduxStore/textAreasSlice";
 import { clearImage, addNewImage } from "../ReduxStore/imageSlice";
-import html2canvas from "html2canvas";
+import { useAddPostMutation } from "../ReduxStore/APISlice";
+import { useFetchPostQuery } from "../ReduxStore/APISlice";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth } from "../../Firebase/firebaseConfig";
 
 const LeftSideView = () => {
   const dispatch = useDispatch();
-  const pages = useSelector((state) => state.pages.pages);
-  const selectedPage = useSelector((state) => state.pages.selectedPage);
+  const presentation = useSelector((state) => state.presentation.presentation);
+  const pages = useSelector((state) => state.presentation.presentation.slides);
+  const selectedPage = useSelector((state) => state.presentation.selectedPage);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedPageId, setSelectedPageId] = useState("");
   const textAreas = useSelector((state) => state.textAreas.textAreas);
   const images = useSelector((state) => state.images.images);
-  const [canvasElement, setCanvasElement] = useState(null);
+  const [addPost] = useAddPostMutation();
+
+  const [user] = useAuthState(auth);
+  const uuid = user?.uid;
+
   const handleAddPage = () => {
     dispatch(addPage());
-    dispatch(
-      addElementToPage({
-        pageId: selectedPage,
-        elements: [...textAreas, ...images],
-      })
-    );
+    let obj = {
+      id: selectedPage,
+      elements: [...textAreas, ...images],
+    };
+    dispatch(addElementToPage(obj));
+    console.log(presentation.id);
+    addPost({ id: presentation.id, slide: obj, userID: uuid });
+
     dispatch(clearTextArea());
     dispatch(clearImage());
   };
@@ -60,10 +71,10 @@ const LeftSideView = () => {
         currentText.push(item);
       }
     });
+    console.log(selectedPage);
 
     dispatch(addNewTextArea(currentText));
     dispatch(addNewImage(currentImage));
-    console.log(currentPage);
   };
 
   const handleDeletePage = () => {
@@ -73,12 +84,27 @@ const LeftSideView = () => {
     }
   };
 
+  const { data, error, isLoading } = useFetchPostQuery("1702271034661");
+
   React.useEffect(() => {
-    // Trigger the capture when the component mounts or when the selected page changes
-    html2canvas(document.getElementById(`${selectedPage}`)).then((canvas) => {
-      setCanvasElement(canvas);
-    });
-  }, [selectedPage]);
+    if (!isLoading) {
+      if (error) {
+        console.error("Error fetching data:", error);
+      } else if (data && Array.isArray(data.slides) && data.slides.length > 0) {
+        console.log("Fetched data:", data);
+
+        dispatch(
+          currentPresentation({
+            id: "1702271034661",
+            slides: data.slides,
+            selectedPage: data.slides[0].pageId,
+          })
+        );
+      } else {
+        console.warn("Invalid or empty data received:", data);
+      }
+    }
+  }, [data, error, isLoading]);
 
   return (
     <Box
@@ -115,6 +141,7 @@ const LeftSideView = () => {
           onClick={() => handleSelectPage(page.id)}
           key={page.id}
         >
+          {console.log(pages)}
           <CardBody id="abcd"></CardBody>
         </Card>
       ))}

@@ -1,17 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  pages: [
-    {
-      id: Date.now(),
-      elements: [],
-    },
-  ],
+  presentation: {
+    id: Date.now(),
+    slides: [
+      {
+        id: Date.now(),
+        elements: [],
+      },
+    ],
+  },
   selectedPage: Date.now(),
 };
 
 const pageSlice = createSlice({
-  name: "pages",
+  name: "presentation",
   initialState,
   reducers: {
     addPage: (state) => {
@@ -19,30 +22,29 @@ const pageSlice = createSlice({
         id: Date.now(),
         elements: [],
       };
-      state.pages.push(newPage);
+      state.presentation.slides.push(newPage);
       state.selectedPage = newPage.id;
     },
     selectPage: (state, action) => {
       state.selectedPage = action.payload;
-      
     },
     addElementToPage: (state, action) => {
       const { pageId, elements } = action.payload;
 
-      const page = state.pages.find((p) => p.id === pageId);
+      const page = state.presentation.slides.find((p) => p.id === pageId);
       if (page) {
         page.elements.push(...elements);
       }
     },
     deletePage: (state) => {
-      const selectedPageIndex = state.pages.findIndex(
+      const selectedPageIndex = state.presentation.slides.findIndex(
         (page) => page.id === state.selectedPage
       );
 
       if (selectedPageIndex !== -1) {
-        state.pages.splice(selectedPageIndex, 1);
+        state.presentation.slides.splice(selectedPageIndex, 1);
 
-        if (state.pages.length > 0) {
+        if (state.presentation.slides.length > 0) {
           // If there are remaining pages, select the first one
           state.selectedPage = state.pages[0].id;
         } else {
@@ -51,9 +53,17 @@ const pageSlice = createSlice({
         }
       }
     },
+    currentPresentation: (state, action) => {
+      state.presentation = action.payload;
+    },
   },
 });
 
-export const { addPage, selectPage, addElementToPage, deletePage } =
-  pageSlice.actions;
+export const {
+  addPage,
+  selectPage,
+  addElementToPage,
+  deletePage,
+  currentPresentation,
+} = pageSlice.actions;
 export default pageSlice.reducer;

@@ -15,7 +15,7 @@ const MiddleSideView = () => {
   const dispatch = useDispatch();
   const textAreas = useSelector((state) => state.textAreas.textAreas);
   const images = useSelector((state) => state.images.images);
-  const selectedPage = useSelector((state) => state.pages.selectedPage);
+  const selectedPage = useSelector((state) => state.presentation.selectedPage);
   const selectedTextArea = useSelector(
     (state) => state.textAreas.selectedTextArea
   );
@@ -140,7 +140,7 @@ const MiddleSideView = () => {
           boxShadow="outline"
           height="100%"
         >
-          <Box id={selectedPage} position="relative" ref={dragRef}>
+          <Box position="relative" ref={dragRef}>
             {textAreas.map((textArea) => (
               <Box
                 key={textArea.id}
@@ -163,6 +163,7 @@ const MiddleSideView = () => {
                   zIndex={textArea.zIndex}
                   width="auto"
                   onChange={handleTextChange}
+                  value={textArea.content}
                 />
               </Box>
             ))}
