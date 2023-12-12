@@ -1,12 +1,6 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
-import {
-  addDoc,
-  collection,
-  getDocs,
-  getDoc,
-  doc,
-  setDoc,
-} from "firebase/firestore";
+import { collection, getDocs, getDoc, doc, setDoc } from "firebase/firestore";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
 import { firestore } from "../../Firebase/firebaseConfig";
 export const createPostApi = createApi({
@@ -93,11 +87,12 @@ export const createPostApi = createApi({
           const postRef = doc(firestore, "presentation", id.toString());
           const postSnapshot = await getDoc(postRef);
 
+          console.log(postSnapshot.exists());
+
           let updatedSlides;
 
+          // If the document exists, update the slides array or add a new slide if it doesn't exist
           if (postSnapshot.exists()) {
-            // If the document exists, update the slides array
-            // If the document exists, update the slides array or add a new slide if it doesn't exist
             const existingSlides = postSnapshot.data()?.slides || [];
             let slideExists = false;
 
@@ -118,15 +113,13 @@ export const createPostApi = createApi({
                 elements: updatedElements || [],
               });
             }
-
+          } else {
             // If the document doesn't exist, create a new one with the new slide
-            if (existingSlides.length === 0) {
-              updatedSlides = [
-                { id: slideId, elements: updatedElements || [] },
-              ];
-            }
+            console.log("new one");
+            updatedSlides = [{ id: slideId, elements: updatedElements || [] }];
           }
 
+          // Set the document with the updated or new slides
           await setDoc(postRef, { slides: updatedSlides, userID: userID });
 
           console.log("Elements updated successfully");
@@ -201,6 +194,23 @@ export const createPostApi = createApi({
       },
       invalidatesTags: ["createPost"],
     }),
+    saveImage: builder.mutation({
+      async queryFn(data) {
+        try {
+          const { id, imageFile } = data;
+          const storage = getStorage();
+          const storageRef = ref(storage, `images/${id}`);
+          await uploadBytes(storageRef, imageFile);
+          const imageUrl = await getDownloadURL(storageRef);
+
+          console.log("Image saved successfully");
+          return { data: imageUrl };
+        } catch (err) {
+          console.error("An error occurred:", err);
+          return { error: err };
+        }
+      },
+    }),
   }),
 });
 export const {
@@ -209,4 +219,5 @@ export const {
   useUpdateElementsMutation,
   useDeleteElementsMutation,
   useDeleteSlideMutation,
+  useSaveImageMutation,
 } = createPostApi;

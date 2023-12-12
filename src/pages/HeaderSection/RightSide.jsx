@@ -8,29 +8,44 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../Firebase/firebaseConfig";
 import { signOut } from "firebase/auth";
 import showToast from "../../components/chakraUi/toastUtils";
+import { useNavigate } from "react-router-dom";
 
 const RightSide = () => {
   const setAuthModalState = useSetRecoilState(authModalState);
   const [user] = useAuthState(auth);
   const toast = useToast();
+  const navigate = useNavigate();
   const isMobile = useBreakpointValue({ base: true, md: false });
 
-
   const handleAuthButtonClick = () => {
-    if(user){
-        signOut(auth)
+    if (user) {
+      signOut(auth)
         .then(() => {
           showToast(toast, "Logged out successfully", "", "success");
         })
         .catch((error) => {
           showToast(toast, "Error logging out", error.message, "error");
         });
-    }
-    else{
-        setAuthModalState({ open: true, view: "login" });
+    } else {
+      setAuthModalState({ open: true, view: "login" });
     }
   };
 
+  const handleCreateUser = () => {
+    if (user) {
+      navigate(`/presentation/${user?.uid}/create`);
+    } else {
+      setAuthModalState({ open: true, view: "login" });
+    }
+  };
+
+  const handleViewSlides = () => {
+    if (user) {
+      navigate("/presentation/view");
+    } else {
+      setAuthModalState({ open: true, view: "login" });
+    }
+  };
   return (
     <Flex
       align={isMobile ? "flex-start" : "flex-start"}
@@ -45,6 +60,7 @@ const RightSide = () => {
         borderRadius={4}
         width="150px"
         height="50px"
+        onClick={handleViewSlides}
       >
         Go to Slide
       </Button>
@@ -57,6 +73,7 @@ const RightSide = () => {
           borderRadius={4}
           width="150px"
           height="50px"
+          onClick={handleCreateUser}
         >
           Create Slides
         </Button>
@@ -77,21 +94,22 @@ const RightSide = () => {
       <SignUp />
       <UserMenu user={user} />
 
-     { isMobile && <Flex>
-        <Button
-         align='flex-end'
-          colorScheme="green"
-          mr={isMobile ? 0 : 4}
-          mb={isMobile ? 4 : 0}
-          borderRadius={4}
-          width="150px"
-          height="50px"
-          onClick={handleAuthButtonClick}
-        >
-          {user ? "Logout" : "Login"}
-        </Button>
-      </Flex>
-}
+      {isMobile && (
+        <Flex>
+          <Button
+            align="flex-end"
+            colorScheme="green"
+            mr={isMobile ? 0 : 4}
+            mb={isMobile ? 4 : 0}
+            borderRadius={4}
+            width="150px"
+            height="50px"
+            onClick={handleAuthButtonClick}
+          >
+            {user ? "Logout" : "Login"}
+          </Button>
+        </Flex>
+      )}
     </Flex>
   );
 };

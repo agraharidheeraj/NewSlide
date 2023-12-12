@@ -6,7 +6,22 @@ const initialState = {
     slides: [
       {
         id: Date.now(),
-        elements: [],
+        elements: [
+          {
+            bgColor: "",
+            color: "",
+            content: "Add Text",
+            fontSize: 32,
+            opacity: "",
+            position: {
+              x: 282.98333740234375,
+              y: 66,
+            },
+            type: "text",
+            zIndex: 1,
+            id: Date.now(),
+          },
+        ],
       },
     ],
     selectedPage: Date.now(),
@@ -34,6 +49,8 @@ const pageSlice = createSlice({
       const page = state.presentation.slides.find((p) => p.id === id);
       if (page) {
         page.elements = elements;
+      } else {
+        state.presentation.slides.push();
       }
     },
     deletePage: (state) => {

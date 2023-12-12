@@ -9,20 +9,27 @@ import { useNavigate } from "react-router-dom";
 const SlidesOverView = () => {
   const [user] = useAuthState(auth);
   const setAuthModalState = useSetRecoilState(authModalState);
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-  const handleCreateUser = () =>{
-    if(user){
-      navigate(`/presentation/${user?.uid}/create`)
+  const handleCreateUser = () => {
+    if (user) {
+      navigate(`/presentation/${user?.uid}/create`);
+    } else {
+      setAuthModalState({ open: true, view: "login" });
     }
-    else{
-      setAuthModalState({open: true, view: 'login'})
+  };
+
+  const handleViewSlides = () => {
+    if (user) {
+      navigate("/presentation/view");
+    } else {
+      setAuthModalState({ open: true, view: "login" });
     }
-  }
+  };
 
   return (
     <Flex
-    direction={{base: 'column',md: 'column', lg:'row'}}
+      direction={{ base: "column", md: "column", lg: "row" }}
       align="center"
       justify="space-between"
       p="4"
@@ -30,10 +37,15 @@ const SlidesOverView = () => {
       margin="5rem"
     >
       {/* First Flex Container */}
-      <Flex width='90%' direction="column" align={{base: 'center', md:'center', lg:'flex-start'}} mb={{ base: "4", md: "0" }}>
+      <Flex
+        width="90%"
+        direction="column"
+        align={{ base: "center", md: "center", lg: "flex-start" }}
+        mb={{ base: "4", md: "0" }}
+      >
         <Text
           fontSize={{ base: "50px", md: "60px" }}
-          width={{base: '100%', md: "100%", lg: '70%'}}
+          width={{ base: "100%", md: "100%", lg: "70%" }}
           color="gray.900"
           fontWeight={500}
           mb="2"
@@ -42,20 +54,25 @@ const SlidesOverView = () => {
         </Text>
         <Text
           fontSize={{ base: "md", md: "lg" }}
-          width={{base: '100%', md: "100%", lg: '60%'}}
+          width={{ base: "100%", md: "100%", lg: "60%" }}
           color="gray.600"
           mb="4"
         >
           Create, present, and collaborate on online presentations in real-time
           and from any device.
         </Text>
-        <Flex mt={6} mb={8} align={{base:'center'}}  direction={{base: 'column', md:'row'}}>
+        <Flex
+          mt={6}
+          mb={8}
+          align={{ base: "center" }}
+          direction={{ base: "column", md: "row" }}
+        >
           <Button
             colorScheme="green"
             mr={4}
             borderRadius={4}
-            width={{base: "250px", md:"150px"}}
-            mb={{base: "20px", md:"0px"}}
+            width={{ base: "250px", md: "150px" }}
+            mb={{ base: "20px", md: "0px" }}
             height="50px"
             onClick={handleCreateUser}
           >
@@ -69,20 +86,21 @@ const SlidesOverView = () => {
             fontSize="12pt"
             borderRadius={4}
             shadow="md"
-            width={{base: "250px", md:"200px"}}
+            width={{ base: "250px", md: "200px" }}
             height="50px"
             _hover={{
               borderColor: "blue.600",
             }}
+            onClick={handleViewSlides}
           >
             View Presentation
           </Button>
         </Flex>
 
         {user ? (
-             <Text color="gray.600" align="center" >
-              Welcome To New Slides! Create Your Own PPT
-           </Text>
+          <Text color="gray.600" align="center">
+            Welcome To New Slides! Create Your Own PPT
+          </Text>
         ) : (
           <Box>
             <Text mr={4} color="gray.800" display="inline-block">
@@ -108,7 +126,13 @@ const SlidesOverView = () => {
               }}
               display="inline-block"
             >
-              <Text color="blue.600"  fontWeight="bold" align="center" display="inline-block"    onClick={() => setAuthModalState({ open: true, view: "login" })}>
+              <Text
+                color="blue.600"
+                fontWeight="bold"
+                align="center"
+                display="inline-block"
+                onClick={() => setAuthModalState({ open: true, view: "login" })}
+              >
                 Sign up for free
               </Text>
             </Box>

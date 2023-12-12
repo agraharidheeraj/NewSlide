@@ -12,13 +12,13 @@ import {
   ModalBody,
   ModalFooter,
   useDisclosure,
+  Textarea,
 } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addPage,
   selectPage,
   deletePage,
-  addElementToPage,
   currentPresentation,
 } from "../ReduxStore/pageSlice";
 import { clearTextArea, addNewTextArea } from "../ReduxStore/textAreasSlice";
@@ -99,15 +99,28 @@ const LeftSideView = () => {
     localStorage.setItem("currentPresentation", Date.now());
     dispatch(
       currentPresentation({
-        presentation: {
-          id: Date.now(),
-          slides: [
-            {
-              id: Date.now(),
-              elements: [],
-            },
-          ],
-        },
+        id: Date.now(),
+        slides: [
+          {
+            id: Date.now(),
+            elements: [
+              {
+                bgColor: "",
+                color: "",
+                content: "Add Text",
+                fontSize: 32,
+                opacity: "",
+                position: {
+                  x: 282.98333740234375,
+                  y: 66,
+                },
+                type: "text",
+                zIndex: 1,
+                id: Date.now(),
+              },
+            ],
+          },
+        ],
         selectedPage: Date.now(),
       })
     );
@@ -133,6 +146,7 @@ const LeftSideView = () => {
         console.warn("Invalid or empty data received:", data);
       }
     }
+    // eslint-disable-next-line
   }, [isLoading]);
 
   return (
@@ -159,19 +173,66 @@ const LeftSideView = () => {
           </Button>
         )}
       </Box>
-      {pages.map((page) => (
+      {pages?.map((page) => (
         <Card
           id={page.id}
-          maxW="md"
+          maxW="200px"
           mb={3}
-          height="120px"
+          height="150px"
           borderColor={selectedPage === page.id ? "blue.500" : "transparent"}
           borderWidth={2}
           borderRadius={4}
           onClick={() => handleSelectPage(page.id)}
           key={page.id}
         >
-          <CardBody></CardBody>
+          {console.log(page)}
+          <CardBody>
+            {page.elements.map((element) =>
+              element.type === "text" ? (
+                <Box
+                  key={element.id}
+                  position="absolute"
+                  top={`${element.position.y * 0.2}px`}
+                  left={`${element.position.x * 0.2}px`}
+                  zIndex={element.zIndex}
+                >
+                  <div
+                    style={{
+                      fontSize: `${element.fontSize * 0.2}px`,
+                      color: element.color,
+                      backgroundColor: element.bgColor,
+                      opacity: element.opacity,
+                      zIndex: element.zIndex,
+                      width: "auto",
+                    }}
+                  >
+                    {console.log(element)}
+                    {element.content}
+                  </div>
+                </Box>
+              ) : (
+                <Box
+                  key={element.id}
+                  position="absolute"
+                  top={`${element.position.y * 0.2}px`}
+                  left={`${element.position.x * 0.2}px`}
+                  zIndex={element.zIndex}
+                >
+                  <div
+                    style={{
+                      width: `${element.width * 0.2}px`,
+                      height: `${element.height * 0.2}px`,
+                      borderRadius: `${element.borderRadius}px`,
+                      border: "1px dashed",
+                      backgroundImage: `url(${element.imageUrl})`,
+                      backgroundSize: "cover",
+                      backgroundRepeat: "no-repeat",
+                    }}
+                  ></div>
+                </Box>
+              )
+            )}
+          </CardBody>
         </Card>
       ))}
       <Modal isOpen={isOpen} onClose={onClose}>

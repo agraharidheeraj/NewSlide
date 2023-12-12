@@ -41,7 +41,6 @@ const imageSlice = createSlice({
 
     addNewImage: (state, action) => {
       const currentImage = action.payload;
-
       state.images = currentImage;
     },
     clearImage: (state, action) => {

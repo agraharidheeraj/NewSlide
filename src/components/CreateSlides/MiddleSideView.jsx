@@ -12,13 +12,18 @@ import DraggableTextarea from "./ResizableTextarea";
 import { addElementToPage } from "../ReduxStore/pageSlice";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../Firebase/firebaseConfig";
-import { useUpdateElementsMutation } from "../ReduxStore/APISlice";
+import {
+  useUpdateElementsMutation,
+  useSaveImageMutation,
+} from "../ReduxStore/APISlice";
 
 const MiddleSideView = () => {
   const dispatch = useDispatch();
   const textAreas = useSelector((state) => state.textAreas.textAreas);
   const images = useSelector((state) => state.images.images);
-  const selectedPage = useSelector((state) => state.presentation.presentation.selectedPage);
+  const selectedPage = useSelector(
+    (state) => state.presentation.presentation.selectedPage
+  );
   const selectedTextArea = useSelector(
     (state) => state.textAreas.selectedTextArea
   );
@@ -29,6 +34,7 @@ const MiddleSideView = () => {
   const [updateElements] = useUpdateElementsMutation();
   const [user] = useAuthState(auth);
   const uuid = user?.uid;
+  const [saveImage] = useSaveImageMutation();
 
   const handleTextClick = (id) => {
     dispatch(selectTextArea(id));
@@ -41,21 +47,44 @@ const MiddleSideView = () => {
   const handleAddText = () => {
     dispatch(addTextArea());
   };
+  const getImageFileFromUrl = async (imageUrl) => {
+    const response = await fetch(imageUrl);
+    const blob = await response.blob();
+
+    // Create a File object from the Blob
+    const file = new File([blob], "image.jpg", { type: "image/jpeg" });
+
+    return file;
+  };
 
   const handleAddImage = () => {
     const fileInput = document.getElementById("imageInput");
     fileInput && fileInput.click();
   };
-
-  const handleImageUpload = (event) => {
+  const handleImageUpload = async (event) => {
     const file = event.target.files[0];
 
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        dispatch(addImage({ imageUrl: reader.result }));
-      };
-      reader.readAsDataURL(file);
+      try {
+        const imageUrl = URL.createObjectURL(file);
+
+        // Use the getImageFileFromUrl function
+        const imageFile = await getImageFileFromUrl(imageUrl);
+
+        // Use the useSaveImageMutation to save the image
+        const result = await saveImage({
+          id: Date.now(),
+          imageFile: imageFile,
+        });
+
+        // Assuming result.data contains the image URL
+        const savedImageUrl = result.data;
+
+        // Dispatch the addImage action with the saved image URL
+        dispatch(addImage({ imageUrl: savedImageUrl }));
+      } catch (error) {
+        console.error("An error occurred:", error);
+      }
     }
   };
 
@@ -128,7 +157,7 @@ const MiddleSideView = () => {
 
   return (
     <Flex width="100%" direction="column">
-      <Flex justifyContent="space-between">
+      <Flex justifyContent="space-between" alignItems="center">
         <Box ml={10} mt={2}>
           <Button borderRadius={8} onClick={handleAddText} marginRight="20px">
             Add Text
@@ -144,13 +173,7 @@ const MiddleSideView = () => {
             accept="image/*"
           />
         </Box>
-        <Button
-          ml={10}
-          mt={2}
-          borderRadius={8}
-          onClick={handleSave}
-          marginRight="25px"
-        >
+        <Button borderRadius={8} onClick={handleSave} marginRight="12%">
           Save Changes
         </Button>
       </Flex>
@@ -169,10 +192,10 @@ const MiddleSideView = () => {
           display="flex"
           flexDirection="column"
           width="100%"
-          maxWidth="900px"
+          maxWidth="1000px"
           bg="white"
           boxShadow="outline"
-          height="100%"
+          height="750px"
         >
           <Box position="relative" ref={dragRef}>
             {textAreas.map((textArea) => (
