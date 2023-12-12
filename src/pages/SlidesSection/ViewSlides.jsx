@@ -12,8 +12,9 @@ const SlideList = () => {
   const navigate = useNavigate();
   const [user, loadingAuth, errorAuth] = useAuthState(auth);
 
+
   function handlePresentationClick(id) {
-    navigate(`/presentation/:UserId/create/${id}`);
+    navigate(`/presentation/${user.uid}/create/${id}`);
   }
 
   useEffect(() => {

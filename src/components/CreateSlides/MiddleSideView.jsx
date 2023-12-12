@@ -1,7 +1,8 @@
 // MiddleSideView.jsx
 import React, { useRef, useState } from "react";
-import { Box, Button, Flex } from "@chakra-ui/react";
+import { Box, Button, Flex, Input } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
+import 'animate.css';
 import {
   addTextArea,
   selectTextArea,
@@ -16,6 +17,7 @@ import {
   useUpdateElementsMutation,
   useSaveImageMutation,
 } from "../ReduxStore/APISlice";
+import { useAnimation } from "../CustomHook/AnimationContext";
 
 const MiddleSideView = () => {
   const dispatch = useDispatch();
@@ -35,6 +37,18 @@ const MiddleSideView = () => {
   const [user] = useAuthState(auth);
   const uuid = user?.uid;
   const [saveImage] = useSaveImageMutation();
+  const { selectedAnimation } = useAnimation();
+
+  const applyAnimation = (element) => {
+    if (selectedAnimation) {
+      const animationClass = `animate__${selectedAnimation}`;
+      element.classList.add("animate__animated", animationClass);
+
+      element.addEventListener("animationend", () => {
+        element.classList.remove("animate__animated", animationClass);
+      });
+    }
+  };
 
   const handleTextClick = (id) => {
     dispatch(selectTextArea(id));
@@ -47,6 +61,7 @@ const MiddleSideView = () => {
   const handleAddText = () => {
     dispatch(addTextArea());
   };
+
   const getImageFileFromUrl = async (imageUrl) => {
     const response = await fetch(imageUrl);
     const blob = await response.blob();
@@ -61,6 +76,7 @@ const MiddleSideView = () => {
     const fileInput = document.getElementById("imageInput");
     fileInput && fileInput.click();
   };
+
   const handleImageUpload = async (event) => {
     const file = event.target.files[0];
 
@@ -76,8 +92,6 @@ const MiddleSideView = () => {
           id: Date.now(),
           imageFile: imageFile,
         });
-
-        // Assuming result.data contains the image URL
         const savedImageUrl = result.data;
 
         // Dispatch the addImage action with the saved image URL
@@ -148,23 +162,26 @@ const MiddleSideView = () => {
     dispatch(addElementToPage(obj));
     updateElements({
       id: presentation.id,
+      title: presentation.title,
       slideId: obj.id,
       updatedElements: obj.elements,
       userID: uuid,
     });
     console.log("saved");
+    console.log(presentation);
   };
 
   return (
     <Flex width="100%" direction="column">
       <Flex justifyContent="space-between" alignItems="center">
-        <Box ml={10} mt={2}>
+        <Box ml={10} >
           <Button borderRadius={8} onClick={handleAddText} marginRight="20px">
             Add Text
           </Button>
           <Button borderRadius={8} onClick={handleAddImage}>
             Upload Image
           </Button>
+
           <input
             id="imageInput"
             type="file"
@@ -173,9 +190,16 @@ const MiddleSideView = () => {
             accept="image/*"
           />
         </Box>
-        <Button borderRadius={8} onClick={handleSave} marginRight="12%">
+
+       
+       
+        <Box  mr={8} >
+        <Button borderRadius={8} onClick={handleSave} >
           Save Changes
         </Button>
+        </Box>
+       
+        
       </Flex>
 
       <Box
@@ -200,6 +224,7 @@ const MiddleSideView = () => {
           <Box position="relative" ref={dragRef}>
             {textAreas.map((textArea) => (
               <Box
+                className={`animate-element animate__animated animate__${selectedAnimation}`}
                 key={textArea.id}
                 position="absolute"
                 top={`${textArea.position.y}px`}
@@ -226,6 +251,7 @@ const MiddleSideView = () => {
             ))}
             {images.map((image) => (
               <Box
+                className={`animate-element animate__animated animate__${selectedAnimation}`}
                 key={image.id}
                 position="absolute"
                 top={`${image.position.y}px`}

@@ -22,7 +22,10 @@ import {
 } from "../ReduxStore/pageSlice";
 import { clearTextArea, addNewTextArea } from "../ReduxStore/textAreasSlice";
 import { clearImage, addNewImage } from "../ReduxStore/imageSlice";
-import { useUpdateElementsMutation } from "../ReduxStore/APISlice";
+import {
+  useUpdateElementsMutation,
+  useDeleteSlideMutation,
+} from "../ReduxStore/APISlice";
 import { useFetchPostQuery } from "../ReduxStore/APISlice";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../Firebase/firebaseConfig";
@@ -39,6 +42,7 @@ const LeftSideView = ({ id }) => {
   const textAreas = useSelector((state) => state.textAreas.textAreas);
   const images = useSelector((state) => state.images.images);
   const [updateElements] = useUpdateElementsMutation();
+  const [deleteSlide] = useDeleteSlideMutation();
 
   const [user] = useAuthState(auth);
   const uuid = user?.uid;
@@ -71,21 +75,24 @@ const LeftSideView = ({ id }) => {
 
     const currentPage = pages.find((item) => item.id === pageId);
 
-    currentPage.elements.forEach((item) => {
-      if (item.type === "image") {
-        currentImage.push(item);
-      } else {
-        currentText.push(item);
-      }
-    });
+    if (currentPage) {
+      currentPage.elements.forEach((item) => {
+        if (item.type === "image") {
+          currentImage.push(item);
+        } else {
+          currentText.push(item);
+        }
+      });
 
-    dispatch(addNewTextArea(currentText));
-    dispatch(addNewImage(currentImage));
+      dispatch(addNewTextArea(currentText));
+      dispatch(addNewImage(currentImage));
+    }
   };
 
   const handleDeletePage = () => {
     if (selectedPageId) {
       dispatch(deletePage(selectedPageId));
+      deleteSlide({ id: presentation.id, slideId: selectedPageId });
       onClose();
     }
   };
@@ -98,18 +105,23 @@ const LeftSideView = ({ id }) => {
         console.error("Error fetching data:", error);
       } else if (data && Array.isArray(data.slides) && data.slides.length > 0) {
         console.log("Fetched data:", data);
-
+        dispatch(clearTextArea());
+        dispatch(clearImage());
         dispatch(
           currentPresentation({
             id: `${id}`,
+            title: data.title,
             slides: data.slides,
             selectedPage: data.slides[0].id,
           })
         );
       } else {
+        dispatch(clearTextArea());
+        dispatch(clearImage());
         dispatch(
           currentPresentation({
             id: `${id}`,
+            title : "Untitled Presentation",
             slides: [
               {
                 id: Date.now(),
@@ -118,7 +130,7 @@ const LeftSideView = ({ id }) => {
                     bgColor: "white",
                     color: "black",
                     content: "Add Text",
-                    fontSize: 32,
+                    fontSize: 16,
                     opacity: "1",
                     position: {
                       x: 100,
@@ -136,8 +148,6 @@ const LeftSideView = ({ id }) => {
         );
       }
     }
-
-    // eslint-disable-next-line
   }, [isLoading]);
 
   return (

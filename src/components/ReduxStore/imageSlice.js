@@ -28,6 +28,7 @@ const imageSlice = createSlice({
         zIndex: 1,
         imageUrl: action.payload?.imageUrl || "",
         type: "image",
+        animation: ""
       };
       state.images.push(newImage);
       state.selectedImage = newImage;

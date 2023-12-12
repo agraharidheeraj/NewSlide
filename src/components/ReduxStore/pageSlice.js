@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   presentation: {
     id: Date.now(),
+    title: "",
     slides: [
       {
         id: Date.now(),
@@ -70,6 +71,9 @@ const pageSlice = createSlice({
         }
       }
     },
+    changeTitle: (state,action) => {
+        state.presentation.title = action.payload.title;
+    },
     currentPresentation: (state, action) => {
       state.presentation = action.payload;
     },
@@ -82,5 +86,6 @@ export const {
   addElementToPage,
   deletePage,
   currentPresentation,
+  changeTitle
 } = pageSlice.actions;
 export default pageSlice.reducer;

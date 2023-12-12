@@ -29,6 +29,7 @@ const textAreasSlice = createSlice({
         zIndex: 1,
         content: "",
         type: "text",
+        animation: ""
       };
       state.textAreas.push(newTextArea);
       state.selectedTextArea = newTextArea;
@@ -42,7 +43,6 @@ const textAreasSlice = createSlice({
 
     addNewTextArea: (state, action) => {
       const currentText = action.payload;
-
       state.textAreas = currentText;
     },
 

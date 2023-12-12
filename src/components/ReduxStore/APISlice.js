@@ -83,7 +83,8 @@ export const createPostApi = createApi({
       async queryFn(data) {
         console.log("updating", data.id);
         try {
-          const { id, slideId, updatedElements, userID } = data;
+          const { id, slideId,title, updatedElements, userID } = data;
+          console.log("title", title);
           const postRef = doc(firestore, "presentation", id.toString());
           const postSnapshot = await getDoc(postRef);
 
@@ -120,7 +121,7 @@ export const createPostApi = createApi({
           }
 
           // Set the document with the updated or new slides
-          await setDoc(postRef, { slides: updatedSlides, userID: userID });
+          await setDoc(postRef, { slides: updatedSlides,title: title, userID: userID });
 
           console.log("Elements updated successfully");
           return { data: "ok" };

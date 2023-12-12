@@ -1,6 +1,9 @@
+
 // RightSideView.jsx
-import React, { useEffect } from "react";
-import { Box, Text, Input, Button } from "@chakra-ui/react";
+import React, { useEffect, useRef, useState } from "react";
+import { Box, Text, Input, Button, Select, Flex } from "@chakra-ui/react";
+import "animate.css";
+
 import { useDispatch, useSelector } from "react-redux";
 import {
   updateTextArea,
@@ -12,9 +15,11 @@ import {
   deleteImage,
   selectImage,
 } from "../ReduxStore/imageSlice";
+import { useAnimation } from "../CustomHook/AnimationContext";
 
 const RightSideView = () => {
   const dispatch = useDispatch();
+  const { selectedAnimation, setSelectedAnimation } = useAnimation();
   const selectedTextArea = useSelector(
     (state) => state.textAreas.selectedTextArea
   );
@@ -42,16 +47,16 @@ const RightSideView = () => {
   };
 
   const [editedTextArea, setEditedTextArea] = React.useState(initialArea);
+  const [animationDuration, setAnimationDuration] = useState(1);
 
-// Example: Add more debug logs
-useEffect(() => {
-  setEditedTextArea((prev) => ({
-    ...prev,
-    position: currentTextArea?.position || { x: 0, y: 40 },
-    imagePosition: currentImage?.position || { x: 0, y: 0 },
-  }));
-}, [currentTextArea, currentImage]);
 
+  useEffect(() => {
+    setEditedTextArea((prev) => ({
+      ...prev,
+      position: currentTextArea?.position || { x: 0, y: 40 },
+      imagePosition: currentImage?.position || { x: 0, y: 0 },
+    }));
+  }, [currentTextArea, currentImage]);
 
   const handleInputChange = (property, value) => {
     setEditedTextArea((prev) => ({ ...prev, [property]: value }));
@@ -111,10 +116,54 @@ useEffect(() => {
     y: position.y.toFixed(2),
   });
 
+  const applyAnimation = () => {
+    console.log("Applying animation...");
+    if (selectedAnimation) {
+      setSelectedAnimation(selectedAnimation); 
+    }
+  };
+
   const dispatchAttributes = () => {
     if (selectedTextArea) {
       return (
         <Box>
+          <Text fontSize="lg">Animation:</Text>
+          <Select
+            value={selectedAnimation}
+            onChange={(e) => setSelectedAnimation(e.target.value)}
+          >
+            <option value="">None</option>
+            {[
+              "flash",
+              "bounce",
+              "rubberBand",
+              "backInDown",
+              "backInLeft",
+              "backInUp",
+              "bounceInDown",
+              "bounceInRight",
+              "fadeInRightBig",
+              "fadeInTopLeft",
+              "fadeInBottomRight",
+              "fadeInBottomRight"
+            ].map((animation) => (
+              <option key={animation} value={animation}>
+                {animation}
+              </option>
+            ))}
+          </Select>
+
+          {selectedAnimation && (
+            <>
+              <Text fontSize="lg">Animation Duration (s):</Text>
+              <Input
+                type="number"
+                value={animationDuration}
+                onChange={(e) => setAnimationDuration(e.target.value)}
+              />
+            </>
+          )}
+
           <Text fontSize="lg">Font Size:</Text>
           <Input
             type="number"
@@ -133,40 +182,53 @@ useEffect(() => {
             value={editedTextArea.bgColor}
             onChange={(e) => handleInputChange("bgColor", e.target.value)}
           />
-          <Text fontSize="lg">Opacity:</Text>
-          <Input
-            type="number"
-            value={editedTextArea.opacity}
-            onChange={(e) => handleInputChange("opacity", e.target.value)}
-          />
-          <Text fontSize="lg">Position X:</Text>
-          <Input
-            type="number"
-            value={formatPosition(editedTextArea.position).x}
-            onChange={(e) =>
-              handleInputChange("position", {
-                ...editedTextArea.position,
-                x: parseFloat(e.target.value),
-              })
-            }
-          />
-          <Text fontSize="lg">Position Y:</Text>
-          <Input
-            type="number"
-            value={formatPosition(editedTextArea.position).y}
-            onChange={(e) =>
-              handleInputChange("position", {
-                ...editedTextArea.position,
-                y: parseFloat(e.target.value),
-              })
-            }
-          />
-          <Text fontSize="lg">Z-Index:</Text>
-          <Input
-            type="number"
-            value={editedTextArea.zIndex}
-            onChange={(e) => handleInputChange("zIndex", e.target.value)}
-          />
+          <Flex gap={2}>
+            <Flex direction="column">
+              <Text fontSize="lg">Opacity:</Text>
+              <Input
+                type="number"
+                value={editedTextArea.opacity}
+                onChange={(e) => handleInputChange("opacity", e.target.value)}
+              />
+            </Flex>
+
+            <Flex direction="column">
+              <Text fontSize="lg">Z-Index:</Text>
+              <Input
+                type="number"
+                value={editedTextArea.zIndex}
+                onChange={(e) => handleInputChange("zIndex", e.target.value)}
+              />
+            </Flex>
+          </Flex>
+          <Flex gap={2}>
+            <Flex direction="column">
+              <Text fontSize="lg">Position X:</Text>
+              <Input
+                type="number"
+                value={formatPosition(editedTextArea.position).x}
+                onChange={(e) =>
+                  handleInputChange("position", {
+                    ...editedTextArea.position,
+                    x: parseFloat(e.target.value),
+                  })
+                }
+              />
+            </Flex>
+            <Flex direction="column">
+              <Text fontSize="lg">Position Y:</Text>
+              <Input
+                type="number"
+                value={formatPosition(editedTextArea.position).y}
+                onChange={(e) =>
+                  handleInputChange("position", {
+                    ...editedTextArea.position,
+                    y: parseFloat(e.target.value),
+                  })
+                }
+              />
+            </Flex>
+          </Flex>
         </Box>
       );
     } else if (selectedImage) {
@@ -247,6 +309,9 @@ useEffect(() => {
       </Button>
       <Button mt={4} borderRadius={6} onClick={dispatchSelect}>
         Unselect
+      </Button>
+      <Button mt={4} borderRadius={6} onClick={() => applyAnimation(selectedAnimation)}>
+        Apply Animation
       </Button>
     </Box>
   );

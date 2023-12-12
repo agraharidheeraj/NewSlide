@@ -10,13 +10,16 @@ import { Provider } from "react-redux";
 import store from "./components/ReduxStore/Store";
 import ViewSlides from "./pages/SlidesSection/ViewSlides";
 
+
+
+
 function App() {
+
   return (
     <RecoilRoot>
       <ChakraProvider theme={theme}>
         <Provider store={store}>
           <Router>
-            <Navbar />
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/presentation/:UserId/create/:id" element={<Slides />} />
