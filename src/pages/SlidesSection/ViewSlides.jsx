@@ -3,15 +3,21 @@ import { Box, Spinner, Text, Grid, Flex } from "@chakra-ui/react";
 import { getDocs, collection, query, where } from "firebase/firestore";
 import { firestore, auth } from "../../Firebase/firebaseConfig";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { useNavigate } from "react-router-dom";
 
 const SlideList = () => {
-  const [slides, setSlides] = useState([]);
+  const [presentation, setPresentation] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
   const [user, loadingAuth, errorAuth] = useAuthState(auth);
 
+  function handlePresentationClick(id) {
+    navigate(`/presentation/:UserId/create/${id}`);
+  }
+
   useEffect(() => {
-    const fetchSlides = async () => {
+    const fetchpresentation = async () => {
       try {
         // Check if user is null or loading
         if (!user || loadingAuth) {
@@ -24,13 +30,13 @@ const SlideList = () => {
           where("userID", "==", userId)
         );
 
-        const slidesCollection = await getDocs(userPresentationsQuery);
-        const slidesData = slidesCollection.docs.map((doc) => ({
+        const presentationCollection = await getDocs(userPresentationsQuery);
+        const presentationData = presentationCollection.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
-        setSlides(slidesData);
-        console.log(slidesData);
+        setPresentation(presentationData);
+        console.log(presentationData);
         setLoading(false);
       } catch (error) {
         setError(error.message);
@@ -38,7 +44,7 @@ const SlideList = () => {
       }
     };
 
-    fetchSlides();
+    fetchpresentation();
   }, [user, loadingAuth]);
 
   if (loading || loadingAuth) {
@@ -70,10 +76,17 @@ const SlideList = () => {
         Recent Presentations
       </Text>
       <Grid templateColumns="repeat(4, 1fr)" gap={4} p={4}>
-        {slides.map((slide) => (
-          <Box key={slide.id} border="1px solid" borderRadius="md" p={4}>
+        {presentation.map((presentation) => (
+          <Box
+            key={presentation.id}
+            border="1px solid"
+            borderRadius="md"
+            p={4}
+            onClick={() => handlePresentationClick(presentation.id)}
+            cursor="pointer"
+          >
             <Text fontSize="lg" fontWeight="bold">
-              Slide ID: {slide.id}
+              Presentation ID: {presentation.id}
             </Text>
 
             <Text mt={2}></Text>

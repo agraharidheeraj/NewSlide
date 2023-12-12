@@ -29,12 +29,12 @@ const RightSideView = () => {
   );
 
   const initialArea = {
-    fontSize: currentTextArea?.fontSize || "",
-    color: currentTextArea?.color || "",
+    fontSize: currentTextArea?.fontSize || 16,
+    color: currentTextArea?.color || "black",
     bgColor: currentTextArea?.bgColor || "",
-    opacity: currentTextArea?.opacity || "",
-    zIndex: currentTextArea?.zIndex || 0,
-    position: currentTextArea?.position || { x: 0, y: 0 },
+    opacity: currentTextArea?.opacity || 1,
+    zIndex: currentTextArea?.zIndex || 1,
+    position: currentTextArea?.position || { x: 0, y: 40 },
     width: currentImage?.width || 0,
     height: currentImage?.height || 0,
     borderRadius: currentImage?.borderRadius || 0,
@@ -43,13 +43,15 @@ const RightSideView = () => {
 
   const [editedTextArea, setEditedTextArea] = React.useState(initialArea);
 
-  useEffect(() => {
-    setEditedTextArea((prev) => ({
-      ...prev,
-      position: currentTextArea?.position || { x: 0, y: 0 },
-      imagePosition: currentImage?.position || { x: 0, y: 0 },
-    }));
-  }, [currentTextArea, currentImage]);
+// Example: Add more debug logs
+useEffect(() => {
+  setEditedTextArea((prev) => ({
+    ...prev,
+    position: currentTextArea?.position || { x: 0, y: 40 },
+    imagePosition: currentImage?.position || { x: 0, y: 0 },
+  }));
+}, [currentTextArea, currentImage]);
+
 
   const handleInputChange = (property, value) => {
     setEditedTextArea((prev) => ({ ...prev, [property]: value }));

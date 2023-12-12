@@ -22,10 +22,10 @@ const textAreasSlice = createSlice({
       const newTextArea = {
         id: Date.now(),
         position: { x: 0, y: 40 },
-        fontSize: "",
-        color: "",
+        fontSize: 16,
+        color: "black",
         bgColor: "",
-        opacity: "",
+        opacity: 1,
         zIndex: 1,
         content: "",
         type: "text",

@@ -19,7 +19,7 @@ function App() {
             <Navbar />
             <Routes>
               <Route path="/" element={<HomePage />} />
-              <Route path="/presentation/:UserId/create" element={<Slides />} />
+              <Route path="/presentation/:UserId/create/:id" element={<Slides />} />
               <Route path="/presentation/view" element={<ViewSlides />} />
             </Routes>
           </Router>

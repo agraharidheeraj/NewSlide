@@ -31,14 +31,6 @@ const RightSide = () => {
     }
   };
 
-  const handleCreateUser = () => {
-    if (user) {
-      navigate(`/presentation/${user?.uid}/create`);
-    } else {
-      setAuthModalState({ open: true, view: "login" });
-    }
-  };
-
   const handleViewSlides = () => {
     if (user) {
       navigate("/presentation/view");
@@ -66,17 +58,7 @@ const RightSide = () => {
       </Button>
 
       {user ? (
-        <Button
-          colorScheme="green"
-          mr={isMobile ? 0 : 4}
-          mb={isMobile ? 4 : 0}
-          borderRadius={4}
-          width="150px"
-          height="50px"
-          onClick={handleCreateUser}
-        >
-          Create Slides
-        </Button>
+        <div></div>
       ) : (
         <Button
           colorScheme="green"

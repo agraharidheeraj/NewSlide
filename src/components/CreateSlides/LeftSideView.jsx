@@ -12,7 +12,6 @@ import {
   ModalBody,
   ModalFooter,
   useDisclosure,
-  Textarea,
 } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -28,7 +27,7 @@ import { useFetchPostQuery } from "../ReduxStore/APISlice";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../Firebase/firebaseConfig";
 
-const LeftSideView = () => {
+const LeftSideView = ({ id }) => {
   const dispatch = useDispatch();
   const presentation = useSelector((state) => state.presentation.presentation);
   const pages = useSelector((state) => state.presentation.presentation.slides);
@@ -67,7 +66,7 @@ const LeftSideView = () => {
     let currentText = [];
     let currentImage = [];
     dispatch(selectPage(pageId));
-    console.log(pageId);
+
     setSelectedPageId(pageId);
 
     const currentPage = pages.find((item) => item.id === pageId);
@@ -91,41 +90,6 @@ const LeftSideView = () => {
     }
   };
 
-  let id;
-
-  if (localStorage.getItem("currentPresentation")) {
-    id = localStorage.getItem("currentPresentation");
-  } else {
-    localStorage.setItem("currentPresentation", Date.now());
-    dispatch(
-      currentPresentation({
-        id: Date.now(),
-        slides: [
-          {
-            id: Date.now(),
-            elements: [
-              {
-                bgColor: "",
-                color: "",
-                content: "Add Text",
-                fontSize: 32,
-                opacity: "",
-                position: {
-                  x: 282.98333740234375,
-                  y: 66,
-                },
-                type: "text",
-                zIndex: 1,
-                id: Date.now(),
-              },
-            ],
-          },
-        ],
-        selectedPage: Date.now(),
-      })
-    );
-  }
-
   const { data, error, isLoading } = useFetchPostQuery(`${id}`);
 
   React.useEffect(() => {
@@ -143,9 +107,36 @@ const LeftSideView = () => {
           })
         );
       } else {
-        console.warn("Invalid or empty data received:", data);
+        dispatch(
+          currentPresentation({
+            id: `${id}`,
+            slides: [
+              {
+                id: Date.now(),
+                elements: [
+                  {
+                    bgColor: "white",
+                    color: "black",
+                    content: "Add Text",
+                    fontSize: 32,
+                    opacity: "1",
+                    position: {
+                      x: 100,
+                      y: 100,
+                    },
+                    type: "text",
+                    zIndex: 1,
+                    id: Date.now(),
+                  },
+                ],
+              },
+            ],
+            selectedPage: Date.now(),
+          })
+        );
       }
     }
+
     // eslint-disable-next-line
   }, [isLoading]);
 
@@ -185,7 +176,6 @@ const LeftSideView = () => {
           onClick={() => handleSelectPage(page.id)}
           key={page.id}
         >
-          {console.log(page)}
           <CardBody>
             {page.elements.map((element) =>
               element.type === "text" ? (
@@ -206,7 +196,6 @@ const LeftSideView = () => {
                       width: "auto",
                     }}
                   >
-                    {console.log(element)}
                     {element.content}
                   </div>
                 </Box>

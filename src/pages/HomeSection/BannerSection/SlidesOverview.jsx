@@ -13,7 +13,7 @@ const SlidesOverView = () => {
 
   const handleCreateUser = () => {
     if (user) {
-      navigate(`/presentation/${user?.uid}/create`);
+      navigate(`/presentation/${user?.uid}/create/${Date.now()}`);
     } else {
       setAuthModalState({ open: true, view: "login" });
     }

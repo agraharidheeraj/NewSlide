@@ -195,7 +195,7 @@ const MiddleSideView = () => {
           maxWidth="1000px"
           bg="white"
           boxShadow="outline"
-          height="750px"
+          maxHeight="750px"
         >
           <Box position="relative" ref={dragRef}>
             {textAreas.map((textArea) => (
