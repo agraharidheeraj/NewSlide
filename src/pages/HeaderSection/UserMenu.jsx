@@ -22,16 +22,19 @@ import { auth } from "../../Firebase/firebaseConfig";
 import { VscAccount } from "react-icons/vsc";
 import { RiLogoutCircleLine } from "react-icons/ri";
 import { IoMdLogIn } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 
 const UserMenu = ({ user }) => {
   const setAuthModalState = useSetRecoilState(authModalState);
   const toast = useToast();
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     if (user) {
       signOut(auth)
         .then(() => {
           showToast(toast, "Logged out successfully", "", "success");
+           navigate('/')
         })
         .catch((error) => {
           showToast(toast, "Error logging out", error.message, "error");

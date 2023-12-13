@@ -29,7 +29,7 @@ import {
 import { useFetchPostQuery } from "../ReduxStore/APISlice";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../Firebase/firebaseConfig";
-import { serverTimestamp } from "firebase/firestore";
+
 
 const LeftSideView = ({ id }) => {
   const dispatch = useDispatch();
@@ -128,7 +128,7 @@ const LeftSideView = ({ id }) => {
                 id: Date.now(),
                 elements: [
                   {
-                    bgColor: "white",
+                    bgColor: "",
                     color: "black",
                     content: "Add Text",
                     fontSize: 16,
@@ -201,12 +201,14 @@ const LeftSideView = ({ id }) => {
                 >
                   <div
                     style={{
-                      fontSize: `${element.fontSize * 0.2}px`,
+                      fontSize: `${element.fontSize * 0.25}px`,
                       color: element.color,
                       backgroundColor: element.bgColor,
                       opacity: element.opacity,
                       zIndex: element.zIndex,
+                      whiteSpace:"pre-wrap",
                       width: "auto",
+                      wordWrap:"break-word"
                     }}
                   >
                     {element.content}
@@ -222,8 +224,8 @@ const LeftSideView = ({ id }) => {
                 >
                   <div
                     style={{
-                      width: `${element.width * 0.2}px`,
-                      height: `${element.height * 0.2}px`,
+                      width: `${element.width * 0.25}px`,
+                      height: `${element.height * 0.23}px`,
                       borderRadius: `${element.borderRadius}px`,
                       border: "1px dashed",
                       backgroundImage: `url(${element.imageUrl})`,

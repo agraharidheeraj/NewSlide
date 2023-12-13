@@ -4,13 +4,11 @@ import { Box, Text, Input, Button, Select, Flex } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   updateTextArea,
-  deleteTextArea,
-  selectTextArea,
+  deleteTextArea
 } from "../ReduxStore/textAreasSlice";
 import {
   updateImage,
-  deleteImage,
-  selectImage,
+  deleteImage
 } from "../ReduxStore/imageSlice";
 import { useAnimation } from "../CustomHook/AnimationContext";
 
@@ -56,7 +54,7 @@ const RightSideView = () => {
   useEffect(() => {
     setEditedTextArea((prev) => ({
       ...prev,
-      position: currentTextArea?.position || { x: 0, y: 40 },
+      position: currentTextArea?.position || { x: 50, y: 50 },
      
     }));
   }, [currentTextArea]);
@@ -64,7 +62,7 @@ const RightSideView = () => {
   useEffect(() =>{
     setEditedImage((prev) =>({
       ...prev,
-      imagePosition: currentImage?.position || { x: 0, y: 0 },
+      imagePosition: currentImage?.position || { x: 50, y: 50 },
     }))
   },[currentImage])
   
@@ -104,6 +102,8 @@ const RightSideView = () => {
     }
   };
 
+  console.log(editedTextArea)
+
   const dispatchDelete = () => {
     if (selectedTextArea) {
       dispatch(deleteTextArea(selectedTextArea));
@@ -116,8 +116,8 @@ const RightSideView = () => {
 
 
   const formatPosition = (position) => ({
-    x: position.x.toFixed(2),
-    y: position.y.toFixed(2),
+    x: position.x.toFixed(0),
+    y: position.y.toFixed(0),
   });
 
   const { setSelectedElementType } = useAnimation();

@@ -71,12 +71,12 @@ const SlidesOverView = () => {
             colorScheme="green"
             mr={4}
             borderRadius={4}
-            width={{ base: "250px", md: "150px" }}
+            width={{ base: "250px", md: "200px" }}
             mb={{ base: "20px", md: "0px" }}
             height="50px"
             onClick={handleCreateUser}
           >
-            Create Slides
+            Create New Presentation
           </Button>
 
           <Button
@@ -86,14 +86,14 @@ const SlidesOverView = () => {
             fontSize="12pt"
             borderRadius={4}
             shadow="md"
-            width={{ base: "250px", md: "200px" }}
+            width={{ base: "250px", md: "150px" }}
             height="50px"
             _hover={{
               borderColor: "blue.600",
             }}
             onClick={handleViewSlides}
           >
-            View Presentation
+            Go To Slides
           </Button>
         </Flex>
 

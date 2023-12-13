@@ -1,5 +1,5 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
-import { collection, getDocs, getDoc, doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { collection, getDocs, getDoc, doc, setDoc, serverTimestamp, deleteDoc } from "firebase/firestore";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
 import { firestore } from "../../Firebase/firebaseConfig";
@@ -176,7 +176,23 @@ export const createPostApi = createApi({
         }
       },
     }),
+
+    deletePresentation: builder.mutation({
+      async queryFn(data) {
+        try {
+          const postRef = doc(firestore, "presentation", data.toString());
+          const docRef = await getDoc(postRef)
+          if(docRef.exists()){
+            await deleteDoc(postRef)
+
+          }
+        } catch (error) {
+           console.error("An error occurred while deleting :", error);
+        }
+      }
+    })
   }),
+
 });
 export const {
   useFetchPostQuery,
@@ -185,4 +201,5 @@ export const {
   useDeleteElementsMutation,
   useDeleteSlideMutation,
   useSaveImageMutation,
+  useDeletePresentationMutation
 } = createPostApi;

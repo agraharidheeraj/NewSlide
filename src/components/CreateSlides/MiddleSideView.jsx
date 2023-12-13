@@ -36,11 +36,11 @@ const MiddleSideView = () => {
   const presentation = useSelector((state) => state.presentation.presentation);
 
   const [updateElements] = useUpdateElementsMutation();
-  const [user] = useAuthState(auth);
+  const [user,loadingAuth] = useAuthState(auth);
   const uuid = user?.uid;
   const [saveImage] = useSaveImageMutation();
   const { selectedAnimation, selectedElementType } = useAnimation();
-
+  const [selectedElementId, setSelectedElementId] = useState(null);
   const applyAnimation = (element) => {
     if (selectedAnimation && selectedElementType) {
       const animationClass = `animate__${selectedAnimation}`;
@@ -53,11 +53,13 @@ const MiddleSideView = () => {
   };
   const handleTextClick = (id) => {
     dispatch(selectTextArea(id));
+    setSelectedElementId(id);
   };
 
   const handleImageClick = (id) => {
     dispatch(selectTextArea(null))
     dispatch(selectImage(id));
+    setSelectedElementId(id);
     
   };
 
@@ -176,6 +178,25 @@ const MiddleSideView = () => {
     console.log(presentation);
   };
 
+  if (loading || loadingAuth) {
+    return (
+      <Flex
+        height="100vh"
+        width="100%"
+        alignItems="center"
+        justifyContent="center"
+      >
+        <Spinner
+          thickness="4px"
+          speed="0.65s"
+          emptyColor="gray.200"
+          color="blue.500"
+          size="xl"
+        />
+      </Flex>
+    );
+  }
+
   return (
     <Flex bg="#282828" padding="16px 0px" width="100%" direction="column">
       <Flex justifyContent="space-between" alignItems="center">
@@ -226,9 +247,11 @@ const MiddleSideView = () => {
          
             {textAreas.map((textArea) => (
               <div
-                key={textArea.id}
+              key={textArea.id}
                 className={`animate-element animate__animated animate__${
-                  selectedElementType === "text" ? selectedAnimation : ""
+                  selectedElementType === "text" && selectedElementId === textArea.id
+                    ? selectedAnimation
+                    : ""
                 }`}
                 style={{
                   position: "absolute",
@@ -258,10 +281,12 @@ const MiddleSideView = () => {
 
             {images.map((image) => (
               <div
-                key={image.id}
-                className={`animate-element animate__animated animate__${
-                  selectedElementType === "image" ? selectedAnimation : ""
-                }`}
+              key={image.id}
+              className={`animate-element animate__animated animate__${
+                selectedElementType === "image" && selectedElementId === image.id
+                  ? selectedAnimation
+                  : ""
+              }`}
                 style={{
                   position: "absolute",
                   top: `${image.position.y}px`,

@@ -25,6 +25,7 @@ const DraggableTextarea = ({ id, ...props }) => {
           width: "fit-content",
           height: "fit-content",
           outline: "none",
+
         }}
       >
         <Textarea
@@ -32,13 +33,15 @@ const DraggableTextarea = ({ id, ...props }) => {
           {...props}
           style={{
             resize: "both",
-            overflow: "auto",
+            overflow: "hidden",
             cursor: isSelected ? "grab" : "default",
             position: "absolute",
-            width: "300px",
+            width: "800px",
             height: "100px",
             outline: "none",
             border: "none",
+            padding:"0px",
+            
           }}
         />
       </div>
