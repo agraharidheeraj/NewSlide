@@ -110,11 +110,17 @@ const SlideList = () => {
   }
 
   const formatTimestamp = (timestamp) => {
+    if (!timestamp || !timestamp.toDate) {
+      return "Invalid Date";
+    }
+  
     const distance = formatDistanceToNow(timestamp.toDate(), {
       addSuffix: true,
     });
+  
     return distance;
   };
+  
 
   return (
     <Box>

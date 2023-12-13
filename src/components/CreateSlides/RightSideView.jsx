@@ -4,7 +4,7 @@ import { Box, Text, Input, Button, Select, Flex } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   updateTextArea,
-  deleteTextArea
+  deleteTextArea,
 } from "../ReduxStore/textAreasSlice";
 import {
   updateImage,
@@ -50,6 +50,28 @@ const RightSideView = () => {
   const [editedTextArea, setEditedTextArea] = useState(initialArea);
   const [editedImage,setEditedImage] = useState(initialArea);
   const [animationDuration, setAnimationDuration] = useState(1);
+
+
+  useEffect(() => {
+    setInitialArea();
+  }, [currentTextArea, currentImage]);
+
+  const setInitialArea = () => {
+    const newInitialArea = {
+      fontSize: currentTextArea?.fontSize,
+      color: currentTextArea?.color,
+      bgColor: currentTextArea?.bgColor,
+      opacity: currentTextArea?.opacity,
+      zIndex: currentTextArea?.zIndex,
+      position: currentTextArea?.positio,
+      width: currentImage?.width,
+      height: currentImage?.height,
+      borderRadius: currentImage?.borderRadius ,
+      imagePosition: currentImage?.position ,
+    };
+    setEditedTextArea(newInitialArea);
+  };
+
 
   useEffect(() => {
     setEditedTextArea((prev) => ({
@@ -116,9 +138,10 @@ const RightSideView = () => {
 
 
   const formatPosition = (position) => ({
-    x: position.x.toFixed(0),
-    y: position.y.toFixed(0),
+    x: position?.x?.toFixed(0) || 0,
+    y: position?.y?.toFixed(0) || 0,
   });
+  
 
   const { setSelectedElementType } = useAnimation();
 
@@ -169,7 +192,7 @@ const RightSideView = () => {
             ))}
           </Select>
 
-          {selectedAnimation && (
+          {/* {selectedAnimation && (
             <>
               <Text fontSize="lg">Animation Duration (s):</Text>
               <Input
@@ -178,7 +201,7 @@ const RightSideView = () => {
                 onChange={(e) => setAnimationDuration(e.target.value)}
               />
             </>
-          )}
+          )} */}
 
           <Text fontSize="lg">Font Size:</Text>
           <Input
@@ -276,7 +299,7 @@ const RightSideView = () => {
             ))}
           </Select>
 
-          {selectedAnimation && (
+          {/* {selectedAnimation && (
             <>
               <Text fontSize="lg">Animation Duration (s):</Text>
               <Input
@@ -285,7 +308,7 @@ const RightSideView = () => {
                 onChange={(e) => setAnimationDuration(e.target.value)}
               />
             </>
-          )}
+          )} */}
 
           <Text fontSize="lg">Width:</Text>
           <Input
