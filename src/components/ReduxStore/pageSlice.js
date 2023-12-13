@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { serverTimestamp } from "firebase/firestore";
 
 const initialState = {
   presentation: {
@@ -38,9 +39,11 @@ const pageSlice = createSlice({
         id: Date.now(),
         elements: [],
       };
+      newPage.createdAt = serverTimestamp();
       state.presentation.slides.push(newPage);
       state.presentation.selectedPage = newPage.id;
     },
+    
     selectPage: (state, action) => {
       state.presentation.selectedPage = action.payload;
     },

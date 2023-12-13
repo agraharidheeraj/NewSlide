@@ -1,9 +1,6 @@
-
 // RightSideView.jsx
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Text, Input, Button, Select, Flex } from "@chakra-ui/react";
-import "animate.css";
-
 import { useDispatch, useSelector } from "react-redux";
 import {
   updateTextArea,
@@ -24,13 +21,18 @@ const RightSideView = () => {
     (state) => state.textAreas.selectedTextArea
   );
   const selectedImage = useSelector((state) => state.images.selectedImage);
+  console.log(selectedImage)
 
   const currentTextArea = useSelector((state) =>
     state.textAreas.textAreas.find((item) => item.id === selectedTextArea)
   );
 
-  const currentImage = useSelector((state) =>
-    state.images.images.find((item) => item.id === selectedImage)
+  const currentImage = useSelector((state) => {
+
+    return state.images.images.find((item) => item.id === selectedImage)
+
+  }
+     
   );
 
   const initialArea = {
@@ -40,23 +42,32 @@ const RightSideView = () => {
     opacity: currentTextArea?.opacity || 1,
     zIndex: currentTextArea?.zIndex || 1,
     position: currentTextArea?.position || { x: 0, y: 40 },
-    width: currentImage?.width || 0,
-    height: currentImage?.height || 0,
+    width: currentImage?.width || 100,
+    height: currentImage?.height || 100,
     borderRadius: currentImage?.borderRadius || 0,
     imagePosition: currentImage?.position || { x: 0, y: 0 },
   };
+  console.log(initialArea)
 
-  const [editedTextArea, setEditedTextArea] = React.useState(initialArea);
+  const [editedTextArea, setEditedTextArea] = useState(initialArea);
+  const [editedImage,setEditedImage] = useState(initialArea);
   const [animationDuration, setAnimationDuration] = useState(1);
-
 
   useEffect(() => {
     setEditedTextArea((prev) => ({
       ...prev,
       position: currentTextArea?.position || { x: 0, y: 40 },
-      imagePosition: currentImage?.position || { x: 0, y: 0 },
+     
     }));
-  }, [currentTextArea, currentImage]);
+  }, [currentTextArea]);
+
+  useEffect(() =>{
+    setEditedImage((prev) =>({
+      ...prev,
+      imagePosition: currentImage?.position || { x: 0, y: 0 },
+    }))
+  },[currentImage])
+  
 
   const handleInputChange = (property, value) => {
     setEditedTextArea((prev) => ({ ...prev, [property]: value }));
@@ -102,24 +113,29 @@ const RightSideView = () => {
     setEditedTextArea(initialArea);
   };
 
-  const dispatchSelect = () => {
-    if (selectedTextArea) {
-      dispatch(selectTextArea(null));
-    } else if (selectedImage) {
-      dispatch(selectImage(null));
-    }
-    setEditedTextArea(initialArea);
-  };
+
 
   const formatPosition = (position) => ({
     x: position.x.toFixed(2),
     y: position.y.toFixed(2),
   });
 
+  const { setSelectedElementType } = useAnimation();
+
   const applyAnimation = () => {
     console.log("Applying animation...");
+    let selectedElementType = null;
+
+    if (selectedTextArea) {
+      selectedElementType = "text";
+    } else if (selectedImage) {
+      selectedElementType = "image";
+    }
+
+    setSelectedElementType(selectedElementType);
+
     if (selectedAnimation) {
-      setSelectedAnimation(selectedAnimation); 
+      setSelectedAnimation(selectedAnimation);
     }
   };
 
@@ -145,7 +161,7 @@ const RightSideView = () => {
               "fadeInRightBig",
               "fadeInTopLeft",
               "fadeInBottomRight",
-              "fadeInBottomRight"
+              "fadeInBottomRight",
             ].map((animation) => (
               <option key={animation} value={animation}>
                 {animation}
@@ -234,6 +250,43 @@ const RightSideView = () => {
     } else if (selectedImage) {
       return (
         <Box>
+          <Text fontSize="lg">Animation:</Text>
+          <Select
+            value={selectedAnimation}
+            onChange={(e) => setSelectedAnimation(e.target.value)}
+          >
+            <option value="">None</option>
+            {[
+              "flash",
+              "bounce",
+              "rubberBand",
+              "backInDown",
+              "backInLeft",
+              "backInUp",
+              "bounceInDown",
+              "bounceInRight",
+              "fadeInRightBig",
+              "fadeInTopLeft",
+              "fadeInBottomRight",
+              "fadeInBottomRight",
+            ].map((animation) => (
+              <option key={animation} value={animation}>
+                {animation}
+              </option>
+            ))}
+          </Select>
+
+          {selectedAnimation && (
+            <>
+              <Text fontSize="lg">Animation Duration (s):</Text>
+              <Input
+                type="number"
+                value={animationDuration}
+                onChange={(e) => setAnimationDuration(e.target.value)}
+              />
+            </>
+          )}
+
           <Text fontSize="lg">Width:</Text>
           <Input
             type="number"
@@ -307,10 +360,8 @@ const RightSideView = () => {
       >
         Delete
       </Button>
-      <Button mt={4} borderRadius={6} onClick={dispatchSelect}>
-        Unselect
-      </Button>
-      <Button mt={4} borderRadius={6} onClick={() => applyAnimation(selectedAnimation)}>
+     
+      <Button mt={4} borderRadius={6} onClick={applyAnimation}>
         Apply Animation
       </Button>
     </Box>

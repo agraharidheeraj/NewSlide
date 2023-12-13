@@ -1,8 +1,9 @@
 // MiddleSideView.jsx
+
 import React, { useRef, useState } from "react";
-import { Box, Button, Flex, Input } from "@chakra-ui/react";
+import { Box, Button, Flex, Spinner } from "@chakra-ui/react"; // Import the Skeleton component
 import { useDispatch, useSelector } from "react-redux";
-import 'animate.css';
+import "animate.css";
 import {
   addTextArea,
   selectTextArea,
@@ -21,6 +22,7 @@ import { useAnimation } from "../CustomHook/AnimationContext";
 
 const MiddleSideView = () => {
   const dispatch = useDispatch();
+  const [loading,setLoading]= useState(false)
   const textAreas = useSelector((state) => state.textAreas.textAreas);
   const images = useSelector((state) => state.images.images);
   const selectedPage = useSelector(
@@ -37,10 +39,10 @@ const MiddleSideView = () => {
   const [user] = useAuthState(auth);
   const uuid = user?.uid;
   const [saveImage] = useSaveImageMutation();
-  const { selectedAnimation } = useAnimation();
+  const { selectedAnimation, selectedElementType } = useAnimation();
 
   const applyAnimation = (element) => {
-    if (selectedAnimation) {
+    if (selectedAnimation && selectedElementType) {
       const animationClass = `animate__${selectedAnimation}`;
       element.classList.add("animate__animated", animationClass);
 
@@ -49,13 +51,14 @@ const MiddleSideView = () => {
       });
     }
   };
-
   const handleTextClick = (id) => {
     dispatch(selectTextArea(id));
   };
 
   const handleImageClick = (id) => {
+    dispatch(selectTextArea(null))
     dispatch(selectImage(id));
+    
   };
 
   const handleAddText = () => {
@@ -78,6 +81,7 @@ const MiddleSideView = () => {
   };
 
   const handleImageUpload = async (event) => {
+    setLoading(true);
     const file = event.target.files[0];
 
     if (file) {
@@ -99,6 +103,7 @@ const MiddleSideView = () => {
       } catch (error) {
         console.error("An error occurred:", error);
       }
+      setLoading(false)
     }
   };
 
@@ -172,9 +177,9 @@ const MiddleSideView = () => {
   };
 
   return (
-    <Flex width="100%" direction="column">
+    <Flex bg="#282828" padding="16px 0px" width="100%" direction="column">
       <Flex justifyContent="space-between" alignItems="center">
-        <Box ml={10} >
+        <Box ml={10}>
           <Button borderRadius={8} onClick={handleAddText} marginRight="20px">
             Add Text
           </Button>
@@ -191,15 +196,11 @@ const MiddleSideView = () => {
           />
         </Box>
 
-       
-       
-        <Box  mr={8} >
-        <Button borderRadius={8} onClick={handleSave} >
-          Save Changes
-        </Button>
+        <Box mr={8}>
+          <Button borderRadius={8} onClick={handleSave}>
+            Save Changes
+          </Button>
         </Box>
-       
-        
       </Flex>
 
       <Box
@@ -222,14 +223,19 @@ const MiddleSideView = () => {
           maxHeight="750px"
         >
           <Box position="relative" ref={dragRef}>
+         
             {textAreas.map((textArea) => (
-              <Box
-                className={`animate-element animate__animated animate__${selectedAnimation}`}
+              <div
                 key={textArea.id}
-                position="absolute"
-                top={`${textArea.position.y}px`}
-                left={`${textArea.position.x}px`}
-                zIndex={textArea.zIndex}
+                className={`animate-element animate__animated animate__${
+                  selectedElementType === "text" ? selectedAnimation : ""
+                }`}
+                style={{
+                  position: "absolute",
+                  top: `${textArea.position.y}px`,
+                  left: `${textArea.position.x}px`,
+                  zIndex: textArea.zIndex,
+                }}
                 draggable
                 onDragStart={() =>
                   handleDragStart({ id: textArea.id, type: "text" })
@@ -247,16 +253,21 @@ const MiddleSideView = () => {
                   onChange={handleTextChange}
                   value={textArea.content}
                 />
-              </Box>
+              </div>
             ))}
+
             {images.map((image) => (
-              <Box
-                className={`animate-element animate__animated animate__${selectedAnimation}`}
+              <div
                 key={image.id}
-                position="absolute"
-                top={`${image.position.y}px`}
-                left={`${image.position.x}px`}
-                zIndex={image.zIndex}
+                className={`animate-element animate__animated animate__${
+                  selectedElementType === "image" ? selectedAnimation : ""
+                }`}
+                style={{
+                  position: "absolute",
+                  top: `${image.position.y}px`,
+                  left: `${image.position.x}px`,
+                  zIndex: image.zIndex,
+                }}
                 draggable
                 onDragStart={() =>
                   handleDragStart({ id: image.id, type: "image" })
@@ -275,7 +286,7 @@ const MiddleSideView = () => {
                     backgroundRepeat: "no-repeat",
                   }}
                 ></div>
-              </Box>
+              </div>
             ))}
           </Box>
         </Box>

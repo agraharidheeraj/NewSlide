@@ -7,24 +7,29 @@ import { useParams } from "react-router-dom";
 import { AnimationProvider } from "../../components/CustomHook/AnimationContext";
 import SlidesNav from "./SlidesNav";
 
-
 const Slides = () => {
   const { id } = useParams();
   return (
     <AnimationProvider>
-     <SlidesNav/>
-    <Flex bg='gray.800' overflow='hidden' justify="space-between" padding="16px 0px" height='91vh'>
-      <Flex w="18%" p={0} >
-        <LeftSideView  id={id}/>
-      </Flex>
-      <Flex w="63%" >
-        <MiddleSideView />
-      </Flex>
+      <SlidesNav />
+      <Flex
+        borderTop="1px solid black"
+        bg="gray.800"
+        overflow="hidden"
+        justify="space-between"
+        height="91vh"
+      >
+        <Flex w="18%" p={0}>
+          <LeftSideView id={id} />
+        </Flex>
+        <Flex w="63%">
+          <MiddleSideView />
+        </Flex>
 
-      <Flex w="20%" p={0}>
-        <RightSideView />
+        <Flex  bg="#333026" w="20%" >
+          <RightSideView />
+        </Flex>
       </Flex>
-    </Flex>
     </AnimationProvider>
   );
 };

@@ -29,6 +29,7 @@ import {
 import { useFetchPostQuery } from "../ReduxStore/APISlice";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../Firebase/firebaseConfig";
+import { serverTimestamp } from "firebase/firestore";
 
 const LeftSideView = ({ id }) => {
   const dispatch = useDispatch();
@@ -53,7 +54,7 @@ const LeftSideView = ({ id }) => {
       id: selectedPageId,
       elements: [...textAreas, ...images],
     };
-
+    const { createdAt, ...updatedElements } = obj.elements;
     updateElements({
       id: presentation.id,
       slideId: obj.id,
@@ -153,11 +154,13 @@ const LeftSideView = ({ id }) => {
   return (
     <Box
       p={4}
-      bg="green.900"
-      width="250px"
+      bg="#333026"
+      width="260px"
       height="100%"
       overflowY="auto"
       maxHeight="calc(100vh - 20px)"
+      borderRight='1px solid black'
+      shadow='lg'
     >
       <Box mb={4}>
         <Button
@@ -177,12 +180,12 @@ const LeftSideView = ({ id }) => {
       {pages?.map((page) => (
         <Card
           id={page.id}
-          maxW="200px"
+          maxW="210px"
           mb={3}
-          height="150px"
+          height="140px"
           borderColor={selectedPage === page.id ? "blue.500" : "transparent"}
           borderWidth={2}
-          borderRadius={4}
+          borderRadius={6}
           onClick={() => handleSelectPage(page.id)}
           key={page.id}
         >

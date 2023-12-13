@@ -1,5 +1,5 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
-import { collection, getDocs, getDoc, doc, setDoc } from "firebase/firestore";
+import { collection, getDocs, getDoc, doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
 import { firestore } from "../../Firebase/firebaseConfig";
@@ -41,42 +41,6 @@ export const createPostApi = createApi({
       providesTags: (result, error, id) => [{ type: "createPost", id }],
     }),
 
-    // addPost: builder.mutation({
-    //   async queryFn(data) {
-    //     try {
-    //       const { id, slide, userID } = data;
-    //       console.log(slide);
-    //       const postRef = doc(firestore, "presentation", id.toString());
-    //       const postSnapshot = await getDoc(postRef);
-
-    //       if (!postSnapshot.exists()) {
-    //         // If the document doesn't exist, include the userID in the data
-    //         const updatedData = { slides: [slide], userID: userID };
-    //         await setDoc(postRef, updatedData);
-    //       } else {
-    //         // If the document already exists, update the slides array only if the slide is not present
-    //         const existingSlides = postSnapshot.data()?.slides || [];
-
-    //         if (
-    //           !existingSlides.some((existingSlide) => existingSlide === slide)
-    //         ) {
-    //           // If the slide is not present, update the slides array
-    //           const updatedSlides = [...existingSlides, slide];
-    //           await setDoc(postRef, { slides: updatedSlides, userID: userID });
-    //         } else {
-    //           console.log("Slide already exists in the presentation.");
-    //         }
-    //       }
-
-    //       console.log("ok");
-    //       return { data: "ok" };
-    //     } catch (err) {
-    //       console.log("An error occurred:", err);
-    //       return { error: err };
-    //     }
-    //   },
-    //   invalidatesTags: ["createPost"],
-    // }),
 
     // Update Elements Mutation
     updateElements: builder.mutation({
@@ -121,7 +85,7 @@ export const createPostApi = createApi({
           }
 
           // Set the document with the updated or new slides
-          await setDoc(postRef, { slides: updatedSlides,title: title, userID: userID });
+          await setDoc(postRef, { slides: updatedSlides,title: title, userID: userID, createdAt: serverTimestamp(), });
 
           console.log("Elements updated successfully");
           return { data: "ok" };

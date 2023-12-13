@@ -5,9 +5,12 @@ const AnimationContext = createContext();
 
 export const AnimationProvider = ({ children }) => {
   const [selectedAnimation, setSelectedAnimation] = useState(null);
+  const [selectedElementType, setSelectedElementType] = useState(null);
 
   return (
-    <AnimationContext.Provider value={{ selectedAnimation, setSelectedAnimation }}>
+    <AnimationContext.Provider
+      value={{ selectedAnimation, setSelectedAnimation, selectedElementType, setSelectedElementType }}
+    >
       {children}
     </AnimationContext.Provider>
   );

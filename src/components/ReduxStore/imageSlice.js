@@ -11,6 +11,7 @@ const imageSlice = createSlice({
   reducers: {
     selectImage: (state, action) => {
       state.selectedImage = action.payload;
+     
     },
     deleteImage: (state, action) => {
       state.images = state.images.filter(
@@ -30,9 +31,13 @@ const imageSlice = createSlice({
         type: "image",
         animation: ""
       };
-      state.images.push(newImage);
-      state.selectedImage = newImage;
+      return {
+        ...state,
+        images: [...state.images, newImage],
+        selectedImage: newImage
+      };
     },
+    
     updateImage: (state, action) => {
       const { id, updatedProperties } = action.payload;
       state.images = state.images.map((image) =>
