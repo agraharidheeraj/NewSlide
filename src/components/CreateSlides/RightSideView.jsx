@@ -185,8 +185,8 @@ const RightSideView = () => {
               "fadeInTopLeft",
               "fadeInBottomRight",
               "fadeInBottomRight",
-            ].map((animation) => (
-              <option key={animation} value={animation}>
+            ].map((animation,index) => (
+              <option key={index} value={animation}>
                 {animation}
               </option>
             ))}

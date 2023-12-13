@@ -94,6 +94,7 @@ const LeftSideView = ({ id }) => {
     if (selectedPageId) {
       dispatch(deletePage(selectedPageId));
       deleteSlide({ id: presentation.id, slideId: selectedPageId });
+      handleSelectPage(presentation.slides[0].id);
       onClose();
     }
   };

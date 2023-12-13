@@ -41,6 +41,8 @@ const MiddleSideView = () => {
   const [saveImage] = useSaveImageMutation();
   const { selectedAnimation, selectedElementType } = useAnimation();
   const [selectedElementId, setSelectedElementId] = useState(null);
+
+  
   const applyAnimation = (element) => {
     if (selectedAnimation && selectedElementType) {
       const animationClass = `animate__${selectedAnimation}`;

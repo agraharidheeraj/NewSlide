@@ -129,7 +129,7 @@ const SlideList = () => {
         Recent Presentations
       </Text>
 
-      <Grid templateColumns="repeat(5, 1fr)" gap={6} p={4}>
+      <Grid overflow='hidden' templateColumns="repeat(4, 1fr)" gap={6} p={4}>
         <Link to={`/presentation/${user?.uid}/create/${Date.now()}`}>
           <Card
             border="1px solid"
