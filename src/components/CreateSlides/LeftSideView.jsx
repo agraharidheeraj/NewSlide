@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -22,14 +22,10 @@ import {
 } from "../ReduxStore/pageSlice";
 import { clearTextArea, addNewTextArea } from "../ReduxStore/textAreasSlice";
 import { clearImage, addNewImage } from "../ReduxStore/imageSlice";
-import {
-  useUpdateElementsMutation,
-  useDeleteSlideMutation,
-} from "../ReduxStore/APISlice";
+import { useDeleteSlideMutation } from "../ReduxStore/APISlice";
 import { useFetchPostQuery } from "../ReduxStore/APISlice";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../Firebase/firebaseConfig";
-
 
 const LeftSideView = ({ id }) => {
   const dispatch = useDispatch();
@@ -42,7 +38,7 @@ const LeftSideView = ({ id }) => {
   const [selectedPageId, setSelectedPageId] = useState(selectedPage);
   const textAreas = useSelector((state) => state.textAreas.textAreas);
   const images = useSelector((state) => state.images.images);
-  const [updateElements] = useUpdateElementsMutation();
+
   const [deleteSlide] = useDeleteSlideMutation();
 
   const [user] = useAuthState(auth);
@@ -55,12 +51,7 @@ const LeftSideView = ({ id }) => {
       elements: [...textAreas, ...images],
     };
     const { createdAt, ...updatedElements } = obj.elements;
-    updateElements({
-      id: presentation.id,
-      slideId: obj.id,
-      updatedElements: obj.elements,
-      userID: uuid,
-    });
+
     setSelectedPageId(presentation.selectedPage);
 
     dispatch(clearTextArea());
@@ -123,12 +114,13 @@ const LeftSideView = ({ id }) => {
         dispatch(
           currentPresentation({
             id: `${id}`,
-            title : "Untitled Presentation",
+            title: "Untitled Presentation",
             slides: [
               {
                 id: Date.now(),
                 elements: [
                   {
+                    animation: "",
                     bgColor: "",
                     color: "black",
                     content: "Add Text",
@@ -152,7 +144,6 @@ const LeftSideView = ({ id }) => {
     }
   }, [isLoading]);
 
-
   return (
     <Box
       p={4}
@@ -161,8 +152,8 @@ const LeftSideView = ({ id }) => {
       height="100%"
       overflowY="auto"
       maxHeight="calc(100vh - 20px)"
-      borderRight='1px solid black'
-      shadow='lg'
+      borderRight="1px solid black"
+      shadow="lg"
     >
       <Box mb={4}>
         <Button
@@ -208,9 +199,9 @@ const LeftSideView = ({ id }) => {
                       backgroundColor: element.bgColor,
                       opacity: element.opacity,
                       zIndex: element.zIndex,
-                      whiteSpace:"pre-wrap",
+                      whiteSpace: "pre-wrap",
                       width: "auto",
-                      wordWrap:"break-word"
+                      wordWrap: "break-word",
                     }}
                   >
                     {element.content}

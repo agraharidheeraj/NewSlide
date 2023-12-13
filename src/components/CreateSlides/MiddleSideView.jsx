@@ -11,20 +11,24 @@ import {
 } from "../ReduxStore/textAreasSlice";
 import { addImage, selectImage, updateImage } from "../ReduxStore/imageSlice";
 import DraggableTextarea from "./ResizableTextarea";
-import { addElementToPage } from "../ReduxStore/pageSlice";
+import {
+  addElementToPage,
+  selectElement,
+  updateElement,
+} from "../ReduxStore/pageSlice";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../Firebase/firebaseConfig";
 import {
-  useUpdateElementsMutation,
+  useUpdateDbMutation,
   useSaveImageMutation,
 } from "../ReduxStore/APISlice";
 import { useAnimation } from "../CustomHook/AnimationContext";
+import { current } from "@reduxjs/toolkit";
 
 const MiddleSideView = () => {
   const dispatch = useDispatch();
-  const [loading,setLoading]= useState(false)
-  const textAreas = useSelector((state) => state.textAreas.textAreas);
-  const images = useSelector((state) => state.images.images);
+  const [loading, setLoading] = useState(false);
+
   const selectedPage = useSelector(
     (state) => state.presentation.presentation.selectedPage
   );
@@ -34,39 +38,55 @@ const MiddleSideView = () => {
   const [draggedItem, setDraggedItem] = useState(null);
   const dragRef = useRef(null);
   const presentation = useSelector((state) => state.presentation.presentation);
+  const currentSlide = presentation.slides.find(
+    (item) => item.id === presentation.selectedPage
+  );
+  const textAreas = currentSlide.elements.filter(
+    (item) => item.type === "text"
+  );
+  const images = currentSlide.elements.filter((item) => item.type === "image");
 
-  const [updateElements] = useUpdateElementsMutation();
-  const [user,loadingAuth] = useAuthState(auth);
+  const [updateDb] = useUpdateDbMutation();
+  const [user, loadingAuth] = useAuthState(auth);
   const uuid = user?.uid;
   const [saveImage] = useSaveImageMutation();
   const { selectedAnimation, selectedElementType } = useAnimation();
   const [selectedElementId, setSelectedElementId] = useState(null);
 
-  
-  const applyAnimation = (element) => {
-    if (selectedAnimation && selectedElementType) {
-      const animationClass = `animate__${selectedAnimation}`;
-      element.classList.add("animate__animated", animationClass);
+  // const applyAnimation = (element) => {
+  //   if (selectedAnimation && selectedElementType) {
+  //     const animationClass = `animate__${selectedAnimation}`;
+  //     element.classList.add("animate__animated", animationClass);
 
-      element.addEventListener("animationend", () => {
-        element.classList.remove("animate__animated", animationClass);
-      });
-    }
-  };
+  //     element.addEventListener("animationend", () => {
+  //       element.classList.remove("animate__animated", animationClass);
+  //     });
+  //   }
+  // };
   const handleTextClick = (id) => {
-    dispatch(selectTextArea(id));
+    dispatch(selectElement(id));
     setSelectedElementId(id);
   };
 
   const handleImageClick = (id) => {
-    dispatch(selectTextArea(null))
-    dispatch(selectImage(id));
+    dispatch(selectElement(id));
     setSelectedElementId(id);
-    
   };
 
   const handleAddText = () => {
-    dispatch(addTextArea());
+    const defaultObj = {
+      id: Date.now(),
+      position: { x: 0, y: 40 },
+      fontSize: 16,
+      color: "black",
+      bgColor: "",
+      opacity: 1,
+      zIndex: 1,
+      content: "",
+      type: "text",
+      animation: "",
+    };
+    dispatch(addElementToPage({ element: defaultObj }));
   };
 
   const getImageFileFromUrl = async (imageUrl) => {
@@ -102,12 +122,24 @@ const MiddleSideView = () => {
         });
         const savedImageUrl = result.data;
 
+        const defaultObj = {
+          id: Date.now(),
+          position: { x: 200, y: 100 },
+          width: 100,
+          height: 100,
+          borderRadius: 0,
+          zIndex: 1,
+          imageUrl: savedImageUrl || "",
+          type: "image",
+          animation: "",
+        };
+
         // Dispatch the addImage action with the saved image URL
-        dispatch(addImage({ imageUrl: savedImageUrl }));
+        dispatch(addElementToPage({ element: defaultObj }));
       } catch (error) {
         console.error("An error occurred:", error);
       }
-      setLoading(false)
+      setLoading(false);
     }
   };
 
@@ -156,26 +188,14 @@ const MiddleSideView = () => {
   const handleTextChange = (e) => {
     const value = e.target.value;
     dispatch(
-      updateTextArea({
-        id: selectedTextArea,
+      updateElement({
         updatedProperties: { content: value },
       })
     );
   };
 
   const handleSave = () => {
-    let obj = {
-      id: selectedPage,
-      elements: [...textAreas, ...images],
-    };
-    dispatch(addElementToPage(obj));
-    updateElements({
-      id: presentation.id,
-      title: presentation.title,
-      slideId: obj.id,
-      updatedElements: obj.elements,
-      userID: uuid,
-    });
+    updateDb(presentation);
     console.log("saved");
     console.log(presentation);
   };
@@ -245,13 +265,14 @@ const MiddleSideView = () => {
           boxShadow="outline"
           maxHeight="750px"
         >
+          {console.log(currentSlide)}
           <Box position="relative" ref={dragRef}>
-         
-            {textAreas.map((textArea) => (
+            {textAreas?.map((textArea) => (
               <div
-              key={textArea.id}
+                key={textArea.id}
                 className={`animate-element animate__animated animate__${
-                  selectedElementType === "text" && selectedElementId === textArea.id
+                  selectedElementType === "text" &&
+                  selectedElementId === textArea.id
                     ? selectedAnimation
                     : ""
                 }`}
@@ -281,14 +302,15 @@ const MiddleSideView = () => {
               </div>
             ))}
 
-            {images.map((image) => (
+            {images?.map((image) => (
               <div
-              key={image.id}
-              className={`animate-element animate__animated animate__${
-                selectedElementType === "image" && selectedElementId === image.id
-                  ? selectedAnimation
-                  : ""
-              }`}
+                key={image.id}
+                className={`animate-element animate__animated animate__${
+                  selectedElementType === "image" &&
+                  selectedElementId === image.id
+                    ? selectedAnimation
+                    : ""
+                }`}
                 style={{
                   position: "absolute",
                   top: `${image.position.y}px`,

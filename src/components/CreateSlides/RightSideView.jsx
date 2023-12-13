@@ -2,174 +2,73 @@
 import React, { useEffect, useState } from "react";
 import { Box, Text, Input, Button, Select, Flex } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  updateTextArea,
-  deleteTextArea,
-} from "../ReduxStore/textAreasSlice";
-import {
-  updateImage,
-  deleteImage
-} from "../ReduxStore/imageSlice";
+import { updateTextArea, deleteTextArea } from "../ReduxStore/textAreasSlice";
+import { updateImage, deleteImage } from "../ReduxStore/imageSlice";
 import { useAnimation } from "../CustomHook/AnimationContext";
+import { deleteElement, updateElement } from "../ReduxStore/pageSlice";
+import { current } from "@reduxjs/toolkit";
 
 const RightSideView = () => {
   const dispatch = useDispatch();
   const { selectedAnimation, setSelectedAnimation } = useAnimation();
-  const selectedTextArea = useSelector(
-    (state) => state.textAreas.selectedTextArea
-  );
-  const selectedImage = useSelector((state) => state.images.selectedImage);
-  console.log(selectedImage)
-
-  const currentTextArea = useSelector((state) =>
-    state.textAreas.textAreas.find((item) => item.id === selectedTextArea)
+  const presentation = useSelector((state) => state.presentation.presentation);
+  const selectedElement = presentation.selectedElement;
+  const currentSlide = presentation.slides.find(
+    (item) => item.id === presentation.selectedPage
   );
 
-  const currentImage = useSelector((state) => {
+  const element = currentSlide.elements.filter(
+    (item) => item.id === selectedElement
+  )[0];
 
-    return state.images.images.find((item) => item.id === selectedImage)
-
-  }
-     
-  );
-
-  const initialArea = {
-    fontSize: currentTextArea?.fontSize || 16,
-    color: currentTextArea?.color || "black",
-    bgColor: currentTextArea?.bgColor || "",
-    opacity: currentTextArea?.opacity || 1,
-    zIndex: currentTextArea?.zIndex || 1,
-    position: currentTextArea?.position || { x: 0, y: 40 },
-    width: currentImage?.width || 100,
-    height: currentImage?.height || 100,
-    borderRadius: currentImage?.borderRadius || 0,
-    imagePosition: currentImage?.position || { x: 0, y: 0 },
+  const handleInputChange = (key, value) => {
+    dispatch(updateElement({ updatedProperties: { [key]: value } }));
   };
-  console.log(initialArea)
-
-  const [editedTextArea, setEditedTextArea] = useState(initialArea);
-  const [editedImage,setEditedImage] = useState(initialArea);
-  const [animationDuration, setAnimationDuration] = useState(1);
-
-
-  useEffect(() => {
-    setInitialArea();
-  }, [currentTextArea, currentImage]);
-
-  const setInitialArea = () => {
-    const newInitialArea = {
-      fontSize: currentTextArea?.fontSize,
-      color: currentTextArea?.color,
-      bgColor: currentTextArea?.bgColor,
-      opacity: currentTextArea?.opacity,
-      zIndex: currentTextArea?.zIndex,
-      position: currentTextArea?.positio,
-      width: currentImage?.width,
-      height: currentImage?.height,
-      borderRadius: currentImage?.borderRadius ,
-      imagePosition: currentImage?.position ,
-    };
-    setEditedTextArea(newInitialArea);
-  };
-
-
-  useEffect(() => {
-    setEditedTextArea((prev) => ({
-      ...prev,
-      position: currentTextArea?.position || { x: 50, y: 50 },
-     
-    }));
-  }, [currentTextArea]);
-
-  useEffect(() =>{
-    setEditedImage((prev) =>({
-      ...prev,
-      imagePosition: currentImage?.position || { x: 50, y: 50 },
-    }))
-  },[currentImage])
-  
-
-  const handleInputChange = (property, value) => {
-    setEditedTextArea((prev) => ({ ...prev, [property]: value }));
-  };
-
-  const dispatchUpdate = () => {
-    if (selectedTextArea) {
-      dispatch(
-        updateTextArea({
-          id: selectedTextArea,
-          updatedProperties: {
-            fontSize: editedTextArea.fontSize,
-            color: editedTextArea.color,
-            bgColor: editedTextArea.bgColor,
-            opacity: editedTextArea.opacity,
-            position: editedTextArea.position,
-            zIndex: editedTextArea.zIndex,
-          },
-        })
-      );
-    } else if (selectedImage) {
-      dispatch(
-        updateImage({
-          id: selectedImage,
-          updatedProperties: {
-            width: editedTextArea.width,
-            height: editedTextArea.height,
-            borderRadius: editedTextArea.borderRadius,
-            zIndex: editedTextArea.zIndex,
-            position: editedTextArea.imagePosition,
-          },
-        })
-      );
-    }
-  };
-
-  console.log(editedTextArea)
-
-  const dispatchDelete = () => {
-    if (selectedTextArea) {
-      dispatch(deleteTextArea(selectedTextArea));
-    } else if (selectedImage) {
-      dispatch(deleteImage(selectedImage));
-    }
-    setEditedTextArea(initialArea);
-  };
-
-
-
-  const formatPosition = (position) => ({
-    x: position?.x?.toFixed(0) || 0,
-    y: position?.y?.toFixed(0) || 0,
-  });
-  
-
   const { setSelectedElementType } = useAnimation();
 
-  const applyAnimation = () => {
+  const applyAnimation = async (e) => {
+    setSelectedAnimation(e.target.value);
+
+    // Rest of the code will be executed after setSelectedAnimation is done
+  };
+
+  useEffect(() => {
     console.log("Applying animation...");
     let selectedElementType = null;
 
-    if (selectedTextArea) {
+    if (element?.type === "text") {
       selectedElementType = "text";
-    } else if (selectedImage) {
+    } else if (element?.type === "image") {
       selectedElementType = "image";
     }
 
     setSelectedElementType(selectedElementType);
+    dispatch(
+      updateElement({ updatedProperties: { animation: selectedAnimation } })
+    );
+  }, [selectedAnimation]); // Add dependencies as needed
 
-    if (selectedAnimation) {
-      setSelectedAnimation(selectedAnimation);
-    }
+  const dispatchDelete = () => {
+    dispatch(deleteElement());
   };
 
   const dispatchAttributes = () => {
-    if (selectedTextArea) {
+    if (element?.type === "text") {
       return (
         <Box>
           <Text fontSize="lg">Animation:</Text>
-          <Select
-            value={selectedAnimation}
-            onChange={(e) => setSelectedAnimation(e.target.value)}
+          <select
+            value={element.animation}
+            onChange={(e) => {
+              setSelectedAnimation(e.target.value);
+
+              // Assuming you have a function to dispatch an action to update the animation in your state
+              dispatch(
+                updateElement({
+                  updatedProperties: { animation: e.target.value },
+                })
+              );
+            }}
           >
             <option value="">None</option>
             {[
@@ -184,13 +83,16 @@ const RightSideView = () => {
               "fadeInRightBig",
               "fadeInTopLeft",
               "fadeInBottomRight",
-              "fadeInBottomRight",
-            ].map((animation,index) => (
-              <option key={index} value={animation}>
+            ].map((animation, index) => (
+              <option
+                key={index}
+                selected={element.animation === animation ? "selected" : null}
+                value={animation}
+              >
                 {animation}
               </option>
             ))}
-          </Select>
+          </select>
 
           {/* {selectedAnimation && (
             <>
@@ -206,19 +108,19 @@ const RightSideView = () => {
           <Text fontSize="lg">Font Size:</Text>
           <Input
             type="number"
-            value={editedTextArea.fontSize}
+            value={element.fontSize}
             onChange={(e) => handleInputChange("fontSize", e.target.value)}
           />
           <Text fontSize="lg">Color:</Text>
           <Input
             type="color"
-            value={editedTextArea.color}
+            value={element.color}
             onChange={(e) => handleInputChange("color", e.target.value)}
           />
           <Text fontSize="lg">Background Color:</Text>
           <Input
             type="color"
-            value={editedTextArea.bgColor}
+            value={element.bgColor}
             onChange={(e) => handleInputChange("bgColor", e.target.value)}
           />
           <Flex gap={2}>
@@ -226,7 +128,7 @@ const RightSideView = () => {
               <Text fontSize="lg">Opacity:</Text>
               <Input
                 type="number"
-                value={editedTextArea.opacity}
+                value={element.opacity}
                 onChange={(e) => handleInputChange("opacity", e.target.value)}
               />
             </Flex>
@@ -235,7 +137,7 @@ const RightSideView = () => {
               <Text fontSize="lg">Z-Index:</Text>
               <Input
                 type="number"
-                value={editedTextArea.zIndex}
+                value={element.zIndex}
                 onChange={(e) => handleInputChange("zIndex", e.target.value)}
               />
             </Flex>
@@ -245,10 +147,10 @@ const RightSideView = () => {
               <Text fontSize="lg">Position X:</Text>
               <Input
                 type="number"
-                value={formatPosition(editedTextArea.position).x}
+                value={element.position.x}
                 onChange={(e) =>
                   handleInputChange("position", {
-                    ...editedTextArea.position,
+                    ...element.position,
                     x: parseFloat(e.target.value),
                   })
                 }
@@ -258,10 +160,10 @@ const RightSideView = () => {
               <Text fontSize="lg">Position Y:</Text>
               <Input
                 type="number"
-                value={formatPosition(editedTextArea.position).y}
+                value={element.position.y}
                 onChange={(e) =>
                   handleInputChange("position", {
-                    ...editedTextArea.position,
+                    ...element.position,
                     y: parseFloat(e.target.value),
                   })
                 }
@@ -270,13 +172,23 @@ const RightSideView = () => {
           </Flex>
         </Box>
       );
-    } else if (selectedImage) {
+    } else if (element?.type === "image") {
       return (
         <Box>
           <Text fontSize="lg">Animation:</Text>
-          <Select
-            value={selectedAnimation}
-            onChange={(e) => setSelectedAnimation(e.target.value)}
+          <select
+            value={element.animation}
+            onChange={(e) => {
+              setSelectedAnimation(e.target.value);
+              console.log("clicked");
+
+              // Assuming you have a function to dispatch an action to update the animation in your state
+              dispatch(
+                updateElement({
+                  updatedProperties: { animation: e.target.value },
+                })
+              );
+            }}
           >
             <option value="">None</option>
             {[
@@ -291,13 +203,16 @@ const RightSideView = () => {
               "fadeInRightBig",
               "fadeInTopLeft",
               "fadeInBottomRight",
-              "fadeInBottomRight",
-            ].map((animation) => (
-              <option key={animation} value={animation}>
+            ].map((animation, index) => (
+              <option
+                key={index}
+                selected={element.animation === animation ? "selected" : null}
+                value={animation}
+              >
                 {animation}
               </option>
             ))}
-          </Select>
+          </select>
 
           {/* {selectedAnimation && (
             <>
@@ -313,31 +228,31 @@ const RightSideView = () => {
           <Text fontSize="lg">Width:</Text>
           <Input
             type="number"
-            value={editedTextArea.width}
+            value={element.width}
             onChange={(e) => handleInputChange("width", e.target.value)}
           />
 
           <Text fontSize="lg">Height:</Text>
           <Input
             type="number"
-            value={editedTextArea.height}
+            value={element.height}
             onChange={(e) => handleInputChange("height", e.target.value)}
           />
 
           <Text fontSize="lg">Border Radius:</Text>
           <Input
             type="number"
-            value={editedTextArea.borderRadius}
+            value={element.borderRadius}
             onChange={(e) => handleInputChange("borderRadius", e.target.value)}
           />
 
           <Text fontSize="lg">Position X:</Text>
           <Input
             type="number"
-            value={formatPosition(editedTextArea.imagePosition).x}
+            value={element.position.x}
             onChange={(e) =>
-              handleInputChange("imagePosition", {
-                ...editedTextArea.imagePosition,
+              handleInputChange("position", {
+                ...element.position,
                 x: parseFloat(e.target.value),
               })
             }
@@ -346,10 +261,10 @@ const RightSideView = () => {
           <Text fontSize="lg">Position Y:</Text>
           <Input
             type="number"
-            value={formatPosition(editedTextArea.imagePosition).y}
+            value={element.position.y}
             onChange={(e) =>
-              handleInputChange("imagePosition", {
-                ...editedTextArea.imagePosition,
+              handleInputChange("position", {
+                ...element.position,
                 y: parseFloat(e.target.value),
               })
             }
@@ -358,7 +273,7 @@ const RightSideView = () => {
           <Text fontSize="lg">Z-Index:</Text>
           <Input
             type="number"
-            value={editedTextArea.zIndex}
+            value={element.zIndex}
             onChange={(e) => handleInputChange("zIndex", e.target.value)}
           />
         </Box>
@@ -371,9 +286,6 @@ const RightSideView = () => {
   return (
     <Box p={4} bg="gray.300" w="100%">
       {dispatchAttributes()}
-      <Button mt={4} mr={1} borderRadius={6} onClick={dispatchUpdate}>
-        Update
-      </Button>
       <Button
         variant="outline"
         mt={4}
@@ -382,10 +294,6 @@ const RightSideView = () => {
         onClick={dispatchDelete}
       >
         Delete
-      </Button>
-     
-      <Button mt={4} borderRadius={6} onClick={applyAnimation}>
-        Apply Animation
       </Button>
     </Box>
   );

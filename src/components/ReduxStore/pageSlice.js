@@ -8,25 +8,11 @@ const initialState = {
     slides: [
       {
         id: Date.now(),
-        elements: [
-          {
-            bgColor: "",
-            color: "",
-            content: "Add Text",
-            fontSize: 32,
-            opacity: "",
-            position: {
-              x: 282.98333740234375,
-              y: 66,
-            },
-            type: "text",
-            zIndex: 1,
-            id: Date.now(),
-          },
-        ],
+        elements: [],
       },
     ],
     selectedPage: Date.now(),
+    selectedElement: "",
   },
 };
 
@@ -43,20 +29,34 @@ const pageSlice = createSlice({
       state.presentation.slides.push(newPage);
       state.presentation.selectedPage = newPage.id;
     },
-    
+
     selectPage: (state, action) => {
       state.presentation.selectedPage = action.payload;
     },
     addElementToPage: (state, action) => {
-      const { id, elements } = action.payload;
+      const { element } = action.payload;
 
-      const page = state.presentation.slides.find((p) => p.id === id);
-      if (page) {
-        page.elements = elements;
-      } else {
-        state.presentation.slides.push();
-      }
+      const page = state.presentation.slides.find(
+        (p) => p.id === state.presentation.selectedPage
+      );
+      page.elements.push(element);
     },
+    updateElement: (state, action) => {
+      const { updatedProperties } = action.payload;
+      const currentSlide = state.presentation.slides.find(
+        (slide) => slide.id === state.presentation.selectedPage
+      );
+
+      if (currentSlide) {
+        currentSlide.elements = currentSlide.elements.map((element) =>
+          element.id === state.presentation.selectedElement
+            ? { ...element, ...updatedProperties }
+            : element
+        );
+      }
+      return state;
+    },
+
     deletePage: (state) => {
       const selectedPageIndex = state.presentation.slides.findIndex(
         (page) => page.id === state.presentation.selectedPage
@@ -74,11 +74,27 @@ const pageSlice = createSlice({
         }
       }
     },
-    changeTitle: (state,action) => {
-        state.presentation.title = action.payload.title;
+    changeTitle: (state, action) => {
+      state.presentation.title = action.payload.title;
     },
     currentPresentation: (state, action) => {
       state.presentation = action.payload;
+    },
+    selectElement: (state, action) => {
+      state.presentation.selectedElement = action.payload;
+    },
+    deleteElement: (state) => {
+      const currentSlide = state.presentation.slides.find(
+        (slide) => slide.id === state.presentation.selectedPage
+      );
+
+      if (currentSlide) {
+        currentSlide.elements = currentSlide.elements.filter(
+          (element) => element.id !== state.presentation.selectedElement
+        );
+      }
+      console.log(currentSlide.elenents);
+      return state;
     },
   },
 });
@@ -89,6 +105,9 @@ export const {
   addElementToPage,
   deletePage,
   currentPresentation,
-  changeTitle
+  changeTitle,
+  selectElement,
+  updateElement,
+  deleteElement,
 } = pageSlice.actions;
 export default pageSlice.reducer;
