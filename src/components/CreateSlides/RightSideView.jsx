@@ -1,12 +1,9 @@
 // RightSideView.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Box, Text, Input, Button, Select, Flex } from "@chakra-ui/react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateTextArea, deleteTextArea } from "../ReduxStore/textAreasSlice";
-import { updateImage, deleteImage } from "../ReduxStore/imageSlice";
 import { useAnimation } from "../CustomHook/AnimationContext";
 import { deleteElement, updateElement } from "../ReduxStore/pageSlice";
-import { current } from "@reduxjs/toolkit";
 
 const RightSideView = () => {
   const dispatch = useDispatch();
@@ -32,6 +29,7 @@ const RightSideView = () => {
 
   useEffect(() => {
     applyAnimation();
+    // eslint-disable-next-line
   }, [element]);
 
   useEffect(() => {
@@ -48,7 +46,8 @@ const RightSideView = () => {
     dispatch(
       updateElement({ updatedProperties: { animation: selectedAnimation } })
     );
-  }, [selectedAnimation]); // Add dependencies as needed
+    // eslint-disable-next-line
+  }, [selectedAnimation]);
 
   const dispatchDelete = () => {
     dispatch(deleteElement());
@@ -96,17 +95,6 @@ const RightSideView = () => {
             ))}
           </Select>
 
-          {/* {selectedAnimation && (
-            <>
-              <Text fontSize="lg">Animation Duration (s):</Text>
-              <Input
-                type="number"
-                value={animationDuration}
-                onChange={(e) => setAnimationDuration(e.target.value)}
-              />
-            </>
-          )} */}
-
           <Text fontSize="lg">Font Size:</Text>
           <Input
             type="number"
@@ -125,6 +113,24 @@ const RightSideView = () => {
             value={element.bgColor}
             onChange={(e) => handleInputChange("bgColor", e.target.value)}
           />
+          <Flex gap={2}>
+            <Flex direction="column">
+              <Text fontSize="lg">Width:</Text>
+              <Input
+                type="number"
+                value={element.width}
+                onChange={(e) => handleInputChange("width", e.target.value)}
+              />
+            </Flex>
+            <Flex direction="column">
+              <Text fontSize="lg">Height:</Text>
+              <Input
+                type="number"
+                value={element.height}
+                onChange={(e) => handleInputChange("height", e.target.value)}
+              />
+            </Flex>
+          </Flex>
           <Flex gap={2}>
             <Flex direction="column">
               <Text fontSize="lg">Opacity:</Text>
@@ -149,7 +155,7 @@ const RightSideView = () => {
               <Text fontSize="lg">Position X:</Text>
               <Input
                 type="number"
-                value={element.position.x}
+                value={parseInt(element.position.x)}
                 onChange={(e) =>
                   handleInputChange("position", {
                     ...element.position,

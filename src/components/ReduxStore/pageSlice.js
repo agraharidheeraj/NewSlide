@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { serverTimestamp } from "firebase/firestore";
 
 const initialState = {
   presentation: {

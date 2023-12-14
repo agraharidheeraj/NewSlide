@@ -1,16 +1,10 @@
 // MiddleSideView.jsx
 
 import React, { useRef, useState } from "react";
-import { Box, Button, Flex, Spinner } from "@chakra-ui/react"; // Import the Skeleton component
+import { Box, Button, Flex, Spinner, Textarea } from "@chakra-ui/react"; // Import the Skeleton component
 import { useDispatch, useSelector } from "react-redux";
 import "animate.css";
-import {
-  addTextArea,
-  selectTextArea,
-  updateTextArea,
-} from "../ReduxStore/textAreasSlice";
-import { addImage, selectImage, updateImage } from "../ReduxStore/imageSlice";
-import DraggableTextarea from "./ResizableTextarea";
+
 import {
   addElementToPage,
   selectElement,
@@ -23,13 +17,11 @@ import {
   useSaveImageMutation,
 } from "../ReduxStore/APISlice";
 import { useAnimation } from "../CustomHook/AnimationContext";
-import { current } from "@reduxjs/toolkit";
 
 const MiddleSideView = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
 
-  const [draggedItem, setDraggedItem] = useState(null);
   const dragRef = useRef(null);
   const presentation = useSelector((state) => state.presentation.presentation);
   const currentSlide = presentation.slides.find(
@@ -41,6 +33,7 @@ const MiddleSideView = () => {
   const images = currentSlide.elements.filter((item) => item.type === "image");
 
   const [updateDb] = useUpdateDbMutation();
+  // eslint-disable-next-line
   const [user, loadingAuth] = useAuthState(auth);
   const [saveImage] = useSaveImageMutation();
   const { selectedAnimation, selectedElementType } = useAnimation();
@@ -73,6 +66,8 @@ const MiddleSideView = () => {
       fontSize: 16,
       color: "black",
       bgColor: "",
+      width: 300,
+      height: 100,
       opacity: 1,
       zIndex: 1,
       content: "",
@@ -133,48 +128,6 @@ const MiddleSideView = () => {
         console.error("An error occurred:", error);
       }
       setLoading(false);
-    }
-  };
-
-  const handleDragStart = (item) => {
-    setDraggedItem(item);
-  };
-
-  const handleDragEnd = () => {
-    setDraggedItem(null);
-  };
-
-  const handleDragOver = (event) => {
-    event.preventDefault();
-  };
-
-  const handleDrop = (event) => {
-    event.preventDefault();
-
-    const { clientX, clientY } = event;
-    const { top, left } = dragRef.current.getBoundingClientRect();
-
-    if (draggedItem) {
-      const newPosition = {
-        x: clientX - left,
-        y: clientY - top,
-      };
-
-      if (draggedItem.type === "text") {
-        dispatch(
-          updateTextArea({
-            id: draggedItem.id,
-            updatedProperties: { position: newPosition },
-          })
-        );
-      } else if (draggedItem.type === "image") {
-        dispatch(
-          updateImage({
-            id: draggedItem.id,
-            updatedProperties: { position: newPosition },
-          })
-        );
-      }
     }
   };
 
@@ -239,15 +192,7 @@ const MiddleSideView = () => {
         </Box>
       </Flex>
 
-      <Box
-        height="100%"
-        width="100%"
-        display="flex"
-        padding={5}
-        pl={8}
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
-      >
+      <Box height="100%" width="100%" display="flex" padding={5} pl={8}>
         <Box
           position="relative"
           display="flex"
@@ -274,22 +219,21 @@ const MiddleSideView = () => {
                   left: `${textArea.position.x}px`,
                   zIndex: textArea.zIndex,
                 }}
-                draggable
-                onDragStart={() =>
-                  handleDragStart({ id: textArea.id, type: "text" })
-                }
-                onDragEnd={handleDragEnd}
               >
-                <DraggableTextarea
+                <Textarea
                   onClick={() => handleTextClick(textArea.id)}
                   fontSize={textArea.fontSize}
                   color={textArea.color}
                   bgColor={textArea.bgColor}
                   opacity={textArea.opacity}
                   zIndex={textArea.zIndex}
-                  width="auto"
                   onChange={handleTextChange}
                   value={textArea.content}
+                  overflow="hidden"
+                  minWidth={textArea.width}
+                  height={textArea.height}
+                  placeholder="Add Text"
+                  border="none"
                 />
               </div>
             ))}
@@ -309,11 +253,6 @@ const MiddleSideView = () => {
                   left: `${image.position.x}px`,
                   zIndex: image.zIndex,
                 }}
-                draggable
-                onDragStart={() =>
-                  handleDragStart({ id: image.id, type: "image" })
-                }
-                onDragEnd={handleDragEnd}
               >
                 <div
                   onClick={() => handleImageClick(image.id)}

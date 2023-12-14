@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   Flex,
   Image,
-  Text,
   Box,
   IconButton,
   Drawer,

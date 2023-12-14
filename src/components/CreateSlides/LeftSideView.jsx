@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -20,8 +20,7 @@ import {
   deletePage,
   currentPresentation,
 } from "../ReduxStore/pageSlice";
-import { clearTextArea, addNewTextArea } from "../ReduxStore/textAreasSlice";
-import { clearImage, addNewImage } from "../ReduxStore/imageSlice";
+
 import { useDeleteSlideMutation } from "../ReduxStore/APISlice";
 import { useFetchPostQuery } from "../ReduxStore/APISlice";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -70,12 +69,8 @@ const LeftSideView = ({ id }) => {
         console.error("Error fetching data:", error);
       } else if (data && Array.isArray(data.slides) && data.slides.length > 0) {
         console.log("Fetched data:", data);
-        dispatch(clearTextArea());
-        dispatch(clearImage());
         dispatch(currentPresentation(data));
       } else {
-        dispatch(clearTextArea());
-        dispatch(clearImage());
         dispatch(
           currentPresentation({
             id: `${id}`,
@@ -98,6 +93,8 @@ const LeftSideView = ({ id }) => {
                     type: "text",
                     zIndex: 1,
                     id: Date.now(),
+                    width: 300,
+                    height: 100,
                   },
                 ],
               },
@@ -110,6 +107,7 @@ const LeftSideView = ({ id }) => {
         );
       }
     }
+    // eslint-disable-next-line
   }, [isLoading]);
 
   return (
@@ -141,9 +139,9 @@ const LeftSideView = ({ id }) => {
       {pages?.map((page) => (
         <Card
           id={page.id}
-          maxW="210px"
+          maxW="200px"
           mb={3}
-          height="140px"
+          height="160px"
           borderColor={selectedPage === page.id ? "blue.500" : "transparent"}
           borderWidth={2}
           borderRadius={6}
@@ -162,14 +160,16 @@ const LeftSideView = ({ id }) => {
                 >
                   <div
                     style={{
-                      fontSize: `${element.fontSize * 0.25}px`,
+                      fontSize: `${element.fontSize * 0.2}px`,
                       color: element.color,
                       backgroundColor: element.bgColor,
                       opacity: element.opacity,
                       zIndex: element.zIndex,
                       whiteSpace: "pre-wrap",
-                      width: "auto",
+                      width: element.width * 0.2,
+                      height: element.height * 0.2,
                       wordWrap: "break-word",
+                      resize: "none",
                     }}
                   >
                     {element.content}
@@ -187,7 +187,7 @@ const LeftSideView = ({ id }) => {
                     style={{
                       width: `${element.width * 0.25}px`,
                       height: `${element.height * 0.23}px`,
-                      borderRadius: `${element.borderRadius}px`,
+                      borderRadius: `${element.borderRadius * 0.2}px`,
                       border: "1px dashed",
                       backgroundImage: `url(${element.imageUrl})`,
                       backgroundSize: "cover",

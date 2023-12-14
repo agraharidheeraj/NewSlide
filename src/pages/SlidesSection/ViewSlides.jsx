@@ -181,8 +181,9 @@ const SlideList = () => {
                           opacity: element.opacity,
                           zIndex: element.zIndex,
                           whiteSpace: "pre-wrap",
-                          width: "auto",
                           wordWrap: "break-word",
+                          width: element.width * 0.3,
+                          maxHeight: element.height * 0.3,
                         }}
                       >
                         {element.content}

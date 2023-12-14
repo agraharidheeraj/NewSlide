@@ -9,16 +9,13 @@ import { auth } from "../../Firebase/firebaseConfig";
 import { signOut } from "firebase/auth";
 import showToast from "../../components/chakraUi/toastUtils";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { clearTextArea } from "../../components/ReduxStore/textAreasSlice";
-import { clearImage } from "../../components/ReduxStore/imageSlice";
 
 const RightSide = () => {
   const setAuthModalState = useSetRecoilState(authModalState);
   const [user] = useAuthState(auth);
   const toast = useToast();
   const navigate = useNavigate();
-  const dispatch = useDispatch()
+
   const isMobile = useBreakpointValue({ base: true, md: false });
 
   const handleAuthButtonClick = () => {
@@ -38,8 +35,6 @@ const RightSide = () => {
   const handleViewSlides = () => {
     if (user) {
       navigate("/presentation/view");
-      dispatch(clearTextArea());
-      dispatch(clearImage());
     } else {
       setAuthModalState({ open: true, view: "login" });
     }
