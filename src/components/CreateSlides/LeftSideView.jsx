@@ -26,6 +26,7 @@ import { useDeleteSlideMutation } from "../ReduxStore/APISlice";
 import { useFetchPostQuery } from "../ReduxStore/APISlice";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../Firebase/firebaseConfig";
+import { serverTimestamp } from "firebase/firestore";
 
 const LeftSideView = ({ id }) => {
   const dispatch = useDispatch();
@@ -36,55 +37,26 @@ const LeftSideView = ({ id }) => {
   );
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedPageId, setSelectedPageId] = useState(selectedPage);
-  const textAreas = useSelector((state) => state.textAreas.textAreas);
-  const images = useSelector((state) => state.images.images);
 
   const [deleteSlide] = useDeleteSlideMutation();
 
   const [user] = useAuthState(auth);
-  const uuid = user?.uid;
 
   const handleAddPage = () => {
     dispatch(addPage());
-    let obj = {
-      id: selectedPageId,
-      elements: [...textAreas, ...images],
-    };
-    const { createdAt, ...updatedElements } = obj.elements;
-
     setSelectedPageId(presentation.selectedPage);
-
-    dispatch(clearTextArea());
-    dispatch(clearImage());
   };
 
   const handleSelectPage = (pageId) => {
-    let currentText = [];
-    let currentImage = [];
     dispatch(selectPage(pageId));
-
     setSelectedPageId(pageId);
-
-    const currentPage = pages.find((item) => item.id === pageId);
-
-    if (currentPage) {
-      currentPage.elements.forEach((item) => {
-        if (item.type === "image") {
-          currentImage.push(item);
-        } else {
-          currentText.push(item);
-        }
-      });
-
-      dispatch(addNewTextArea(currentText));
-      dispatch(addNewImage(currentImage));
-    }
   };
 
-  const handleDeletePage = () => {
+  const handleDeletePage = async () => {
     if (selectedPageId) {
       dispatch(deletePage(selectedPageId));
-      deleteSlide({ id: presentation.id, slideId: selectedPageId });
+      await deleteSlide({ id: presentation.id, slideId: selectedPageId });
+      console.log(presentation.slides[0]);
       handleSelectPage(presentation.slides[0].id);
       onClose();
     }
@@ -100,14 +72,7 @@ const LeftSideView = ({ id }) => {
         console.log("Fetched data:", data);
         dispatch(clearTextArea());
         dispatch(clearImage());
-        dispatch(
-          currentPresentation({
-            id: `${id}`,
-            title: data.title,
-            slides: data.slides,
-            selectedPage: data.slides[0].id,
-          })
-        );
+        dispatch(currentPresentation(data));
       } else {
         dispatch(clearTextArea());
         dispatch(clearImage());
@@ -123,7 +88,7 @@ const LeftSideView = ({ id }) => {
                     animation: "",
                     bgColor: "",
                     color: "black",
-                    content: "Add Text",
+                    content: "",
                     fontSize: 16,
                     opacity: "1",
                     position: {
@@ -138,6 +103,9 @@ const LeftSideView = ({ id }) => {
               },
             ],
             selectedPage: Date.now(),
+            selectedElement: Date.now(),
+            userID: user.uid,
+            createdAt: serverTimestamp(),
           })
         );
       }

@@ -25,7 +25,6 @@ const pageSlice = createSlice({
         id: Date.now(),
         elements: [],
       };
-      newPage.createdAt = serverTimestamp();
       state.presentation.slides.push(newPage);
       state.presentation.selectedPage = newPage.id;
     },
@@ -75,8 +74,15 @@ const pageSlice = createSlice({
       }
     },
     changeTitle: (state, action) => {
-      state.presentation.title = action.payload.title;
+      return {
+        ...state,
+        presentation: {
+          ...state.presentation,
+          title: action.payload.title,
+        },
+      };
     },
+
     currentPresentation: (state, action) => {
       state.presentation = action.payload;
     },

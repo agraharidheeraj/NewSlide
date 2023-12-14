@@ -21,10 +21,9 @@ import { Link, useNavigate } from "react-router-dom";
 import logo from "../../assest/slideslogo.png";
 import { formatDistanceToNow } from "date-fns";
 import Navbar from "../HeaderSection/Navbar";
-import { AddIcon,DeleteIcon } from "@chakra-ui/icons";
-import {useDeletePresentationMutation}  from "../../components/ReduxStore/APISlice";
+import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
+import { useDeletePresentationMutation } from "../../components/ReduxStore/APISlice";
 import showToast from "../../components/chakraUi/toastUtils";
-
 
 const SlideList = () => {
   const [presentations, setPresentations] = useState([]);
@@ -32,9 +31,9 @@ const SlideList = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   const [user, loadingAuth, errorAuth] = useAuthState(auth);
-  const [deletePresentation] = useDeletePresentationMutation()
+  const [deletePresentation] = useDeletePresentationMutation();
   const toast = useToast();
-   const [refresh,setRefresh] = useState(false);
+  const [refresh, setRefresh] = useState(false);
   function handlePresentationClick(id) {
     navigate(`/presentation/${user.uid}/create/${id}`);
   }
@@ -67,24 +66,21 @@ const SlideList = () => {
     };
 
     fetchPresentations();
-  }, [user, loadingAuth,refresh]);
+  }, [user, loadingAuth, refresh]);
 
-
-  const handleDeletePresentation = async (event,id) => {
+  const handleDeletePresentation = async (event, id) => {
     event.stopPropagation();
     try {
-      if(user ){
+      if (user) {
         await deletePresentation(id);
-        setRefresh((prev)=> !prev)
-         showToast(toast, "Deleted presentation")
-       }
+        setRefresh((prev) => !prev);
+        showToast(toast, "Deleted presentation");
+      }
     } catch (error) {
-       console.error(error);
-       showToast(toast, "error deleting presentation")
+      console.error(error);
+      showToast(toast, "error deleting presentation");
     }
-       
-  }
- 
+  };
 
   if (loading || loadingAuth) {
     return (
@@ -113,14 +109,13 @@ const SlideList = () => {
     if (!timestamp || !timestamp.toDate) {
       return "Invalid Date";
     }
-  
+
     const distance = formatDistanceToNow(timestamp.toDate(), {
       addSuffix: true,
     });
-  
+
     return distance;
   };
-  
 
   return (
     <Box>
@@ -129,7 +124,7 @@ const SlideList = () => {
         Recent Presentations
       </Text>
 
-      <Grid overflow='hidden' templateColumns="repeat(4, 1fr)" gap={6} p={4}>
+      <Grid overflow="hidden" templateColumns="repeat(4, 1fr)" gap={6} p={4}>
         <Link to={`/presentation/${user?.uid}/create/${Date.now()}`}>
           <Card
             border="1px solid"
@@ -165,15 +160,14 @@ const SlideList = () => {
             h="280px"
             cursor="pointer"
             onClick={() => handlePresentationClick(presentation.id)}
+            key={presentation.id}
           >
             <CardBody key={presentation.id}>
-
               {/* Display all elements of the first slide */}
               {presentation.slides.length > 0 &&
                 presentation.slides[0].elements.map((element) =>
                   element.type === "text" ? (
                     <Box
-                      key={element.id}
                       position="absolute"
                       top={`${element.position.y * 0.3}px`}
                       left={`${element.position.x * 0.3}px`}
@@ -220,27 +214,27 @@ const SlideList = () => {
             <Divider />
             {/* Display the title of the presentation */}
 
-            <Flex p={2} direction="column" >
+            <Flex p={2} direction="column">
               <Text p={2} fontWeight="semibold">
                 {presentation.title}
-                
               </Text>
-              <Flex align="center" mr={2} justifyContent='space-between'>
-                <Flex align='center'>
-                <Image ml={1} width="25px" height="25px" src={logo}></Image>
-                <Text ml="10px" color="gray.400" fontSize="9pt">
-                  Updated By {formatTimestamp(presentation.createdAt)}
-                </Text>
+              <Flex align="center" mr={2} justifyContent="space-between">
+                <Flex align="center">
+                  <Image ml={1} width="25px" height="25px" src={logo}></Image>
+                  <Text ml="10px" color="gray.400" fontSize="9pt">
+                    Updated By {formatTimestamp(presentation.createdAt)}
+                  </Text>
                 </Flex>
-                
-                <Flex  align='center'
-                   onClick={(event) => handleDeletePresentation(event,presentation.id)}
+
+                <Flex
+                  align="center"
+                  onClick={(event) =>
+                    handleDeletePresentation(event, presentation.id)
+                  }
                 >
-                <Icon color='red' as={DeleteIcon}></Icon>
+                  <Icon color="red" as={DeleteIcon}></Icon>
                 </Flex>
-            
               </Flex>
-             
             </Flex>
           </Card>
         ))}

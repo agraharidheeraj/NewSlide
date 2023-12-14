@@ -12,7 +12,7 @@ import {
   DrawerHeader,
   DrawerBody,
   useBreakpointValue,
-  Input
+  Input,
 } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import { HamburgerIcon } from "@chakra-ui/icons";
@@ -24,8 +24,8 @@ import { changeTitle } from "../../components/ReduxStore/pageSlice";
 const SlidesNav = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const presentation = useSelector((state) => state.presentation.presentation);
-  console.log(presentation.title);
-   const dispatch = useDispatch();
+
+  const dispatch = useDispatch();
 
   const handleDrawerOpen = () => {
     setIsDrawerOpen(true);
@@ -35,13 +35,12 @@ const SlidesNav = () => {
     setIsDrawerOpen(false);
   };
 
-  const handletitle =(e) => {
-      const value = e.target.value;
-      dispatch(changeTitle({title:value}));
-  }
+  const handletitle = (e) => {
+    const value = e.target.value;
+    dispatch(changeTitle({ title: value }));
+  };
 
   const isMobile = useBreakpointValue({ base: true, md: false });
-
 
   return (
     <Flex
@@ -55,17 +54,17 @@ const SlidesNav = () => {
     >
       <Flex align="center">
         <Link to="/">
-          <Flex align="center" width={{ base: "50px", md: "auto" }} >
+          <Flex align="center" width={{ base: "50px", md: "auto" }}>
             <Image src={slideslogo} height="40px" margin="12px" />
-            
           </Flex>
         </Link>
 
-        <Box width='70%' color='black'>
-        <Input placeholder="presentation title" 
-        value={presentation.title}
-        onChange={handletitle}
-        />
+        <Box width="70%" color="black">
+          <Input
+            placeholder="presentation title"
+            value={presentation.title}
+            onChange={handletitle}
+          />
         </Box>
       </Flex>
 
@@ -100,13 +99,11 @@ const SlidesNav = () => {
                 mr="3rem"
               >
                 <Image src={slideslogo} height="40px" margin="12px" />
-               
               </Flex>
             </Link>
           </DrawerHeader>
           <DrawerBody>
-
-            <RightSide/>
+            <RightSide />
           </DrawerBody>
         </DrawerContent>
       </Drawer>

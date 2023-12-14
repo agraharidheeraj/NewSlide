@@ -29,7 +29,7 @@ const textAreasSlice = createSlice({
         zIndex: 1,
         content: "",
         type: "text",
-        animation: ""
+        animation: "",
       };
       state.textAreas.push(newTextArea);
       state.selectedTextArea = newTextArea;

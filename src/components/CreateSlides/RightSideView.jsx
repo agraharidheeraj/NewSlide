@@ -26,11 +26,13 @@ const RightSideView = () => {
   };
   const { setSelectedElementType } = useAnimation();
 
-  const applyAnimation = async (e) => {
-    setSelectedAnimation(e.target.value);
-
-    // Rest of the code will be executed after setSelectedAnimation is done
+  const applyAnimation = async () => {
+    setSelectedAnimation(element?.animation);
   };
+
+  useEffect(() => {
+    applyAnimation();
+  }, [element]);
 
   useEffect(() => {
     console.log("Applying animation...");
@@ -57,7 +59,7 @@ const RightSideView = () => {
       return (
         <Box>
           <Text fontSize="lg">Animation:</Text>
-          <select
+          <Select
             value={element.animation}
             onChange={(e) => {
               setSelectedAnimation(e.target.value);
@@ -92,7 +94,7 @@ const RightSideView = () => {
                 {animation}
               </option>
             ))}
-          </select>
+          </Select>
 
           {/* {selectedAnimation && (
             <>
@@ -176,7 +178,7 @@ const RightSideView = () => {
       return (
         <Box>
           <Text fontSize="lg">Animation:</Text>
-          <select
+          <Select
             value={element.animation}
             onChange={(e) => {
               setSelectedAnimation(e.target.value);
@@ -212,7 +214,7 @@ const RightSideView = () => {
                 {animation}
               </option>
             ))}
-          </select>
+          </Select>
 
           {/* {selectedAnimation && (
             <>

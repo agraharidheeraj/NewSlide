@@ -29,12 +29,6 @@ const MiddleSideView = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
 
-  const selectedPage = useSelector(
-    (state) => state.presentation.presentation.selectedPage
-  );
-  const selectedTextArea = useSelector(
-    (state) => state.textAreas.selectedTextArea
-  );
   const [draggedItem, setDraggedItem] = useState(null);
   const dragRef = useRef(null);
   const presentation = useSelector((state) => state.presentation.presentation);
@@ -48,7 +42,6 @@ const MiddleSideView = () => {
 
   const [updateDb] = useUpdateDbMutation();
   const [user, loadingAuth] = useAuthState(auth);
-  const uuid = user?.uid;
   const [saveImage] = useSaveImageMutation();
   const { selectedAnimation, selectedElementType } = useAnimation();
   const [selectedElementId, setSelectedElementId] = useState(null);
@@ -195,9 +188,9 @@ const MiddleSideView = () => {
   };
 
   const handleSave = () => {
+    console.log(presentation);
     updateDb(presentation);
     console.log("saved");
-    console.log(presentation);
   };
 
   if (loading || loadingAuth) {
@@ -265,7 +258,6 @@ const MiddleSideView = () => {
           boxShadow="outline"
           maxHeight="750px"
         >
-          {console.log(currentSlide)}
           <Box position="relative" ref={dragRef}>
             {textAreas?.map((textArea) => (
               <div
