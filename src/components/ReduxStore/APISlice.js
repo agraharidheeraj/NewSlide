@@ -45,14 +45,10 @@ export const createPostApi = createApi({
     // Update Elements Mutation
     updateElements: builder.mutation({
       async queryFn(data) {
-        console.log("updating", data.id);
         try {
           const { id, slideId,title, updatedElements, userID } = data;
-          console.log("title", title);
           const postRef = doc(firestore, "presentation", id.toString());
           const postSnapshot = await getDoc(postRef);
-
-          console.log(postSnapshot.exists());
 
           let updatedSlides;
 
@@ -67,7 +63,6 @@ export const createPostApi = createApi({
                 slideExists = true;
                 return { ...s, elements: updatedElements || s.elements };
               }
-              console.log(s);
               return s;
             });
 
@@ -80,7 +75,6 @@ export const createPostApi = createApi({
             }
           } else {
             // If the document doesn't exist, create a new one with the new slide
-            console.log("new one");
             updatedSlides = [{ id: slideId, elements: updatedElements || [] }];
           }
 

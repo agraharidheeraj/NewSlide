@@ -99,6 +99,28 @@ const LeftSideView = ({ id }) => {
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "ArrowUp") {
+      const currentIndex = pages.findIndex((page) => page.id === selectedPageId);
+      if (currentIndex > 0) {
+        handleSelectPage(pages[currentIndex - 1].id);
+      }
+    } else if (e.key === "ArrowDown") {
+      const currentIndex = pages.findIndex((page) => page.id === selectedPageId);
+      if (currentIndex < pages.length - 1) {
+        handleSelectPage(pages[currentIndex + 1].id);
+      }
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown, true);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown, true);
+    };
+  }, [pages, selectedPageId]);
+  
   const { data, error, isLoading } = useFetchPostQuery(`${id}`);
 
   React.useEffect(() => {
