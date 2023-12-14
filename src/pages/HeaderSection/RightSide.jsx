@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Flex, Button, useBreakpointValue, useToast } from "@chakra-ui/react";
 import UserMenu from "./UserMenu";
 import SignUp from "../../components/GoogleAuth/SignUp";
@@ -8,15 +8,18 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../Firebase/firebaseConfig";
 import { signOut } from "firebase/auth";
 import showToast from "../../components/chakraUi/toastUtils";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const RightSide = () => {
   const setAuthModalState = useSetRecoilState(authModalState);
   const [user] = useAuthState(auth);
   const toast = useToast();
   const navigate = useNavigate();
-
+  const location = useLocation();
   const isMobile = useBreakpointValue({ base: true, md: false });
+  const [isFullscreenRequested, setIsFullscreenRequested] = useState(false);
+  const presentation = useSelector((state) => state.presentation.presentation);
 
   const handleAuthButtonClick = () => {
     if (user) {
@@ -39,6 +42,49 @@ const RightSide = () => {
       setAuthModalState({ open: true, view: "login" });
     }
   };
+  const handleSlideshow = () => {
+    if (user) {
+      const element = document.documentElement;
+      if (element.requestFullscreen) {
+        element.requestFullscreen();
+      } else if (element.mozRequestFullScreen) {
+        element.mozRequestFullScreen();
+      } else if (element.webkitRequestFullscreen) {
+        element.webkitRequestFullscreen();
+      } else if (element.msRequestFullscreen) {
+        element.msRequestFullscreen();
+      }
+      setIsFullscreenRequested(true);
+    } else {
+      setAuthModalState({ open: true, view: "login" });
+    }
+  };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (isFullscreenRequested && document.fullscreenElement) {
+        // After entering fullscreen, navigate
+        navigate(`/presentation/${user?.uid}/slideshow`);
+      }
+    };
+
+    const handleEscapeKey = (event) => {
+      if (event.key === "Escape") {
+        // Redirect when the "Escape" key is pressed
+        navigate(`/presentation/${user?.uid}/create/${presentation.id}`);
+      }
+    };
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("keydown", handleEscapeKey);
+
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      document.removeEventListener("keydown", handleEscapeKey);
+    };
+    // eslint-disable-next-line
+  }, [isFullscreenRequested, user, navigate]);
+
   return (
     <Flex
       align={isMobile ? "flex-start" : "flex-start"}
@@ -59,7 +105,19 @@ const RightSide = () => {
       </Button>
 
       {user ? (
-        <div></div>
+        location.pathname !== "/" && (
+          <Button
+            colorScheme="green"
+            mr={isMobile ? 0 : 4}
+            mb={isMobile ? 4 : 0}
+            borderRadius={4}
+            width="150px"
+            height="50px"
+            onClick={handleSlideshow}
+          >
+            Slide Show
+          </Button>
+        )
       ) : (
         <Button
           colorScheme="green"
