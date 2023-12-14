@@ -82,7 +82,10 @@ export const createPostApi = createApi({
           const existingSlides = postSnapshot.data()?.slides || [];
           const updatedSlides = existingSlides.filter((s) => s.id !== slideId);
 
-          await setDoc(postRef, { slides: updatedSlides });
+          await setDoc(postRef, {
+            ...postSnapshot.data(),
+            slides: updatedSlides,
+          });
 
           console.log("Slide deleted successfully");
           return { data: "ok" };

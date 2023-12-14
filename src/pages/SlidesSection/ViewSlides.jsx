@@ -25,6 +25,7 @@ import { AddIcon, DeleteIcon } from "@chakra-ui/icons";
 import { useDeletePresentationMutation } from "../../components/ReduxStore/APISlice";
 import showToast from "../../components/chakraUi/toastUtils";
 
+
 const SlideList = () => {
   const [presentations, setPresentations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -170,7 +171,7 @@ const SlideList = () => {
                     <Box
                       position="absolute"
                       top={`${element.position.y * 0.3}px`}
-                      left={`${element.position.x * 0.3}px`}
+                      left={`${element.position.x * 0.6}px`}
                       zIndex={element.zIndex}
                     >
                       <div
@@ -182,8 +183,8 @@ const SlideList = () => {
                           zIndex: element.zIndex,
                           whiteSpace: "pre-wrap",
                           wordWrap: "break-word",
-                          width: element.width * 0.3,
-                          maxHeight: element.height * 0.3,
+                          width: "auto",
+                          maxHeight: "auto",
                         }}
                       >
                         {element.content}

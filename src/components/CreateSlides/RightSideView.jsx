@@ -222,16 +222,6 @@ const RightSideView = () => {
             ))}
           </Select>
 
-          {/* {selectedAnimation && (
-            <>
-              <Text fontSize="lg">Animation Duration (s):</Text>
-              <Input
-                type="number"
-                value={animationDuration}
-                onChange={(e) => setAnimationDuration(e.target.value)}
-              />
-            </>
-          )} */}
 
           <Text fontSize="lg">Width:</Text>
           <Input

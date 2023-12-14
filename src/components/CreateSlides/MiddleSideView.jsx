@@ -39,16 +39,7 @@ const MiddleSideView = () => {
   const { selectedAnimation, selectedElementType } = useAnimation();
   const [selectedElementId, setSelectedElementId] = useState(null);
 
-  // const applyAnimation = (element) => {
-  //   if (selectedAnimation && selectedElementType) {
-  //     const animationClass = `animate__${selectedAnimation}`;
-  //     element.classList.add("animate__animated", animationClass);
-
-  //     element.addEventListener("animationend", () => {
-  //       element.classList.remove("animate__animated", animationClass);
-  //     });
-  //   }
-  // };
+ 
   const handleTextClick = (id) => {
     dispatch(selectElement(id));
     setSelectedElementId(id);

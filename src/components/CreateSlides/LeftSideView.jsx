@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   Box,
   Button,
@@ -110,6 +110,30 @@ const LeftSideView = ({ id }) => {
     // eslint-disable-next-line
   }, [isLoading]);
 
+
+  const handleKeyDown = (e) => {
+    if (e.key === "ArrowUp") {
+      const currentIndex = pages.findIndex((page) => page.id === selectedPageId);
+      if (currentIndex > 0) {
+        handleSelectPage(pages[currentIndex - 1].id);
+      }
+    } else if (e.key === "ArrowDown") {
+      const currentIndex = pages.findIndex((page) => page.id === selectedPageId);
+      if (currentIndex < pages.length - 1) {
+        handleSelectPage(pages[currentIndex + 1].id);
+      }
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown, true);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown, true);
+    };
+  }, [pages, selectedPageId]);
+
+
   return (
     <Box
       p={4}
@@ -139,11 +163,10 @@ const LeftSideView = ({ id }) => {
       {pages?.map((page) => (
         <Card
           id={page.id}
-          maxW="200px"
+          maxW="220px"
           mb={3}
           height="160px"
           borderColor={selectedPage === page.id ? "blue.500" : "transparent"}
-          borderWidth={2}
           borderRadius={6}
           onClick={() => handleSelectPage(page.id)}
           key={page.id}
@@ -154,8 +177,8 @@ const LeftSideView = ({ id }) => {
                 <Box
                   key={element.id}
                   position="absolute"
-                  top={`${element.position.y * 0.2}px`}
-                  left={`${element.position.x * 0.2}px`}
+                  top={`${element.position.y * 0.3}px`}
+                  left={`${element.position.x * 0.5}px`}
                   zIndex={element.zIndex}
                 >
                   <div
@@ -166,8 +189,8 @@ const LeftSideView = ({ id }) => {
                       opacity: element.opacity,
                       zIndex: element.zIndex,
                       whiteSpace: "pre-wrap",
-                      width: element.width * 0.2,
-                      height: element.height * 0.2,
+                      width: "auto",
+                      height: "auto",
                       wordWrap: "break-word",
                       resize: "none",
                     }}
@@ -179,14 +202,14 @@ const LeftSideView = ({ id }) => {
                 <Box
                   key={element.id}
                   position="absolute"
-                  top={`${element.position.y * 0.2}px`}
-                  left={`${element.position.x * 0.2}px`}
+                  top={`${element.position.y * 0.25}px`}
+                  left={`${element.position.x * 0.4}px`}
                   zIndex={element.zIndex}
                 >
                   <div
                     style={{
                       width: `${element.width * 0.25}px`,
-                      height: `${element.height * 0.23}px`,
+                      height: `${element.height * 0.27}px`,
                       borderRadius: `${element.borderRadius * 0.2}px`,
                       border: "1px dashed",
                       backgroundImage: `url(${element.imageUrl})`,
